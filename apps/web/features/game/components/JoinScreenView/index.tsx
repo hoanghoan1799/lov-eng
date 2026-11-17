@@ -8,6 +8,8 @@ export interface JoinScreenViewProps {
   gender: Gender;
   top: string;
   hair: string;
+  bottom: string;
+  shoes: string;
   isUnderage: boolean;
   isYearInvalid: boolean;
   minAge: number;
@@ -18,6 +20,8 @@ export interface JoinScreenViewProps {
   onGenderChange: (value: Gender) => void;
   onTopChange: (value: string) => void;
   onHairChange: (value: string) => void;
+  onBottomChange: (value: string) => void;
+  onShoesChange: (value: string) => void;
   onSubmit: () => void;
 }
 
@@ -52,6 +56,8 @@ export const JoinScreenView = ({
   gender,
   top,
   hair,
+  bottom,
+  shoes,
   isUnderage,
   isYearInvalid,
   minAge,
@@ -62,6 +68,8 @@ export const JoinScreenView = ({
   onGenderChange,
   onTopChange,
   onHairChange,
+  onBottomChange,
+  onShoesChange,
   onSubmit,
 }: JoinScreenViewProps) => (
   <main className="join-screen">
@@ -95,6 +103,8 @@ export const JoinScreenView = ({
         </div>
       </div>
       <Swatches label="Outfit" colors={PROFILE_COLORS.tops} value={top} onChange={onTopChange} />
+      <Swatches label="Trousers / skirt" colors={PROFILE_COLORS.bottoms} value={bottom} onChange={onBottomChange} />
+      <Swatches label="Shoes" colors={PROFILE_COLORS.shoes} value={shoes} onChange={onShoesChange} />
       <Swatches label="Hair" colors={PROFILE_COLORS.hairs} value={hair} onChange={onHairChange} />
       {errorMessage ? <p className="error">{errorMessage}</p> : null}
       <button type="submit" className="primary" disabled={isConnecting}>

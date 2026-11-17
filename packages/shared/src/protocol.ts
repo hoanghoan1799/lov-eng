@@ -32,6 +32,9 @@ export const avatarLookSchema = z.object({
   gender: z.enum(GENDERS),
   top: colorSchema,
   hair: colorSchema,
+  /** Trousers or skirt colour; the model default when absent. */
+  bottom: colorSchema.optional(),
+  shoes: colorSchema.optional(),
 });
 
 export type AvatarLook = z.infer<typeof avatarLookSchema>;
