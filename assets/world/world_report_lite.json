@@ -1,0 +1,140 @@
+{
+  "collections": [
+    "00_Environment_Terrain",
+    "01_Central_Park",
+    "02_Coffee_Shop",
+    "03_Restaurant",
+    "04_Supermarket",
+    "05_Shopping_Mall",
+    "06_Library",
+    "07_School",
+    "08_Hotel",
+    "09_Train_Station",
+    "10_Airport",
+    "11_Reusable_Props"
+  ],
+  "objects_per_collection": {
+    "00_Environment_Terrain": 536,
+    "01_Central_Park": 158,
+    "02_Coffee_Shop": 50,
+    "03_Restaurant": 66,
+    "04_Supermarket": 71,
+    "05_Shopping_Mall": 40,
+    "06_Library": 33,
+    "07_School": 45,
+    "08_Hotel": 44,
+    "09_Train_Station": 39,
+    "10_Airport": 41,
+    "11_Reusable_Props": 16
+  },
+  "mesh_objects": 1139,
+  "unique_meshes": 631,
+  "linked_duplicates": 508,
+  "master_mesh_users": {
+    "COL_Tree_A_Trunk": 41,
+    "DEC_Tree_A_Leaves": 41,
+    "COL_Tree_B_Trunk": 42,
+    "DEC_Tree_B_Leaves": 42,
+    "COL_Tree_C_Trunk": 23,
+    "DEC_Tree_C_Leaves": 23,
+    "DEC_Bush_Pink": 30,
+    "DEC_Bush_Yellow": 31,
+    "DEC_Bush_Purple": 32,
+    "DEC_Bush_Red": 30,
+    "COL_Bench": 11,
+    "COL_Lamp": 42,
+    "COL_Fence": 18,
+    "COL_Signboard": 10,
+    "COL_Rock": 17,
+    "DEC_GrassTuft": 91
+  },
+  "props_placed": {
+    "COL_Bench": 10,
+    "DEC_Bush_Yellow": 30,
+    "DEC_Bush_Purple": 31,
+    "DEC_Bush_Red": 29,
+    "DEC_Bush_Pink": 29,
+    "COL_Lamp": 41,
+    "COL_Tree_B_Trunk": 41,
+    "DEC_Tree_B_Leaves": 41,
+    "COL_Tree_C_Trunk": 22,
+    "DEC_Tree_C_Leaves": 22,
+    "COL_Tree_A_Trunk": 40,
+    "DEC_Tree_A_Leaves": 40,
+    "COL_Fence": 17,
+    "COL_Signboard": 9,
+    "COL_Rock": 16,
+    "DEC_GrassTuft": 90
+  },
+  "naming": {
+    "COL_": 345,
+    "DEC_": 893,
+    "ground": 85
+  },
+  "materials": 47,
+  "roughness": [
+    0.75
+  ],
+  "static_objects_with_unapplied_transform": [],
+  "island_diameter_m": 120.0,
+  "hills": 12,
+  "bridges": [
+    "Library",
+    "School",
+    "Hotel"
+  ],
+  "reach_min_max_from_centre_m": {
+    "02_Coffee_Shop": [
+      31.0,
+      45.1
+    ],
+    "03_Restaurant": [
+      31.3,
+      48.9
+    ],
+    "04_Supermarket": [
+      32.5,
+      51.9
+    ],
+    "05_Shopping_Mall": [
+      32.5,
+      55.5
+    ],
+    "06_Library": [
+      32.5,
+      56.3
+    ],
+    "07_School": [
+      32.5,
+      55.4
+    ],
+    "08_Hotel": [
+      32.5,
+      51.7
+    ],
+    "09_Train_Station": [
+      32.5,
+      57.5
+    ],
+    "10_Airport": [
+      31.8,
+      57.3
+    ]
+  },
+  "export_game": {
+    "merged_static_meshes": 41,
+    "kept_separate_objects": 509
+  },
+  "glb_game": {
+    "MB": 7.13,
+    "nodes_with_mesh": 550,
+    "unique_meshes": 58,
+    "primitives_unique": 68,
+    "instanced_meshes": 16,
+    "nodes_using_shared_meshes": 508,
+    "materials": 47,
+    "triangles_rendered": 224882,
+    "draw_calls_without_instancing": 769,
+    "draw_calls_with_instancing": 68
+  }
+}

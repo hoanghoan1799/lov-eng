@@ -1,0 +1,801 @@
+<title>Park English Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: sân khấu thế giới mở bên trái, bảng chat và nhật ký bên phải; xếp một cột khi hẹp. */
+:root {
+  --bg: #F5F8F6; --surface: #FFFFFF; --fg: #13211B; --muted: #55655D; --line: #D8E1DC;
+  --accent: #1C7C4D; --accent-soft: #DDF0E4; --accent-fg: #FFFFFF;
+  --warn: #A9650B; --warn-soft: #F8E8CC; --bad: #B03A3A; --bad-soft: #F7DADA;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1612; --surface: #15211B; --fg: #E4EEE8; --muted: #9BB0A5; --line: #2A3A32;
+    --accent: #5FCB90; --accent-soft: #17382A; --accent-fg: #0E1612;
+    --warn: #E5A94F; --warn-soft: #3D2D12; --bad: #EE8C8C; --bad-soft: #432121;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1612; --surface: #15211B; --fg: #E4EEE8; --muted: #9BB0A5; --line: #2A3A32;
+  --accent: #5FCB90; --accent-soft: #17382A; --accent-fg: #0E1612;
+  --warn: #E5A94F; --warn-soft: #3D2D12; --bad: #EE8C8C; --bad-soft: #432121;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5; margin: 0;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; }
+header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+h1 { font-family: var(--font-display); font-size: clamp(22px, 4vw, 30px); line-height: 1.15; margin: 4px 0 0; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 20px; margin: 28px 0 8px; }
+h3 { font-family: var(--font-display); font-size: 16px; margin: 0 0 6px; }
+.notice { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 14px 0; max-width: 100ch; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+button.danger { color: var(--bad); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+input[type="text"], input[type="number"], select { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; min-width: 0; }
+.tools { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.shell { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+@media (max-width: 960px) { .shell { grid-template-columns: minmax(0, 1fr); } }
+#stage { position: relative; aspect-ratio: 16 / 10; min-height: 320px; border-radius: 10px; overflow: hidden; background: #bfdcf0; border: 1px solid var(--line); touch-action: none; user-select: none; }
+#stage canvas.gl { display: block; width: 100%; height: 100%; cursor: grab; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.tag { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; will-change: transform; }
+.tag .nm { background: rgba(10, 20, 15, .72); color: #fff; font-size: 12px; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.tag.npc .nm { background: rgba(120, 80, 10, .85); }
+.tag.lock .nm { background: rgba(120, 30, 30, .88); }
+.tag .bub { background: #fff; color: #13211B; font-size: 12.5px; padding: 4px 8px; border-radius: 8px; max-width: 190px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+.tag .emo { font-size: 26px; line-height: 1; animation: pop .5s ease-out; }
+@keyframes pop { from { transform: scale(.3); } to { transform: scale(1); } }
+.hud { position: absolute; background: rgba(10, 20, 15, .72); color: #fff; border-radius: 8px; padding: 6px 10px; font-size: 13px; }
+#hudTop { left: 10px; top: 10px; display: flex; flex-direction: column; gap: 2px; max-width: calc(100% - 190px); }
+#hudTop .line { display: flex; gap: 12px; flex-wrap: wrap; }
+#hudTop .goal { color: #ffd76a; }
+#hudHint { left: 50%; bottom: 12px; transform: translateX(-50%); max-width: calc(100% - 24px); text-align: center; }
+#toast { left: 50%; top: 12px; transform: translateX(-50%); background: var(--surface); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,.2); max-width: calc(100% - 24px); z-index: 4; }
+#mini { position: absolute; right: 10px; top: 10px; width: 150px; height: 150px; border-radius: 50%; border: 2px solid rgba(255,255,255,.85); box-shadow: 0 1px 6px rgba(0,0,0,.35); background: #5fa86a; }
+@media (max-width: 560px) { #mini { width: 104px; height: 104px; } #hudTop { max-width: calc(100% - 130px); } }
+.dpad { position: absolute; left: 10px; bottom: 10px; display: none; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(2, 44px); gap: 4px; }
+.dpad button { padding: 0; background: rgba(10, 20, 15, .65); color: #fff; border-color: transparent; font-size: 18px; }
+@media (hover: none), (max-width: 700px) { .dpad.on { display: grid; } }
+.act { position: absolute; right: 12px; bottom: 12px; background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; padding: 10px 16px; }
+.gate { position: absolute; inset: 0; background: rgba(8, 16, 12, .8); display: grid; place-items: center; padding: 12px; overflow: auto; z-index: 6; }
+.card { background: var(--surface); color: var(--fg); border-radius: 10px; padding: 18px; width: min(420px, 100%); border: 1px solid var(--line); }
+.card label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+.card input[type="text"], .card input[type="number"] { width: 100%; }
+.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.swatch { width: 28px; height: 28px; border-radius: 50%; padding: 0; border: 2px solid transparent; }
+.swatch[aria-pressed="true"] { border-color: var(--fg); }
+.error { color: var(--bad); font-size: 13px; margin-top: 8px; }
+.bar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+.dialog { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); width: min(560px, calc(100% - 20px)); max-height: calc(100% - 20px); overflow: auto; background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; box-shadow: 0 6px 24px rgba(0,0,0,.35); z-index: 5; }
+.dialog .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; display: flex; flex-direction: column; height: 600px; }
+@media (max-width: 960px) { .panel { height: 480px; } }
+.tabs { display: flex; border-bottom: 1px solid var(--line); }
+.tabs button { flex: 1; border: 0; border-radius: 0; background: transparent; padding: 10px 4px; font-size: 13px; border-bottom: 2px solid transparent; min-width: 0; }
+.tabs button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--accent); font-weight: 600; }
+.pane { padding: 12px; overflow: auto; flex: 1; min-height: 0; }
+.log { display: flex; flex-direction: column; gap: 4px; }
+.msg b { font-weight: 600; }
+.msg time { color: var(--muted); font-size: 11px; margin-left: 6px; }
+.row { display: flex; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.row:last-child { border-bottom: 0; }
+.row .grow { flex: 1; min-width: 120px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.pill { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--accent-soft); color: var(--accent); }
+.pill.lock { background: var(--line); color: var(--muted); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.vol { width: 56px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.vol i { display: block; height: 100%; background: var(--accent); }
+.npcline { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; font-size: 16px; margin: 8px 0; }
+.result { border-radius: 8px; padding: 8px 10px; margin-top: 8px; font-size: 14px; }
+.result.pass { background: var(--accent-soft); }
+.result.fail { background: var(--bad-soft); }
+.meter { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.meter i { display: block; height: 100%; background: var(--accent); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+.emotebar { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+.emotebar button { font-size: 20px; padding: 2px 10px; }
+kbd { font-family: ui-monospace, Menlo, monospace; font-size: 12px; background: var(--accent-soft); border-radius: 4px; padding: 0 5px; }
+@media (prefers-reduced-motion: reduce) { .tag .emo { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Park English · prototype thế giới mở</div>
+      <h1>Đi bộ quanh thành phố, nói chuyện với NPC để mở khóa từng nơi</h1>
+    </div>
+    <div class="tools">
+      <label class="small"><input type="checkbox" id="exploreChk"> Mở hết rào chắn để dạo thử</label>
+      <button id="resetBtn" type="button">Xóa tiến độ và chơi lại</button>
+    </div>
+  </header>
+  <p class="notice">Bản mô phỏng chạy trong trình duyệt. Người chơi khác là <b>bot</b>, chưa có server thật. Mic bị chặn trong khung artifact nên bước "nói" được mô phỏng bằng cách gõ câu bạn sẽ nói. Tiến độ lưu ở trình duyệt của bạn.</p>
+
+  <div class="shell">
+    <section>
+      <div id="stage">
+        <div id="labels"></div>
+        <canvas id="mini" width="320" height="320" aria-label="Bản đồ nhỏ"></canvas>
+        <div class="hud" id="hudTop"><div class="line"><span id="hudWhere">Công viên</span><span id="hudXp">0 XP</span><span id="hudLevel">Mở 1/10</span></div><div class="goal" id="hudGoal"></div></div>
+        <div class="hud" id="hudHint" hidden></div>
+        <div class="hud" id="toast" hidden></div>
+        <button type="button" class="act" id="actBtn" hidden>E · Nói chuyện</button>
+        <div class="dpad" id="dpad" aria-label="Phím di chuyển">
+          <span></span><button type="button" data-key="up" aria-label="Lên">▲</button><span></span>
+          <button type="button" data-key="left" aria-label="Trái">◀</button><button type="button" data-key="down" aria-label="Xuống">▼</button><button type="button" data-key="right" aria-label="Phải">▶</button>
+        </div>
+        <div class="dialog" id="dialog" hidden></div>
+        <div class="gate" id="gate">
+          <form class="card" id="gateForm" autocomplete="off">
+            <h3>Vào thành phố</h3>
+            <p class="muted small" style="margin:0">Chỉ dành cho người từ 18 tuổi trở lên.</p>
+            <label for="gName">Tên hiển thị</label>
+            <input type="text" id="gName" maxlength="20" placeholder="Guest">
+            <label for="gYear">Năm sinh</label>
+            <input type="number" id="gYear" min="1900" max="2100" placeholder="1995" required>
+            <label>Màu áo</label>
+            <div class="swatches" id="gSwatches"></div>
+            <div class="error" id="gError" role="alert" hidden></div>
+            <div class="bar"><button type="submit" class="primary">Vào chơi</button></div>
+          </form>
+        </div>
+      </div>
+      <div class="emotebar" id="emotes" aria-label="Biểu cảm"></div>
+      <p class="muted small" style="margin:8px 0 0">Điều khiển: <kbd>W A S D</kbd> hoặc phím mũi tên để đi, <kbd>Shift</kbd> để chạy, kéo chuột để xoay camera. <kbd>E</kbd> nói chuyện với NPC khi đến gần, <kbd>Esc</kbd> để thoát hội thoại. Giữ <kbd>V</kbd> hoặc nút dưới để nói (mô phỏng voice).</p>
+      <div class="bar"><button type="button" id="pttBtn">🎙 Giữ để nói</button><span class="small muted" id="pttInfo">Voice: tắt</span></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-chat" aria-selected="true" data-tab="chat">Chat gần</button>
+        <button type="button" role="tab" id="tab-people" aria-selected="false" data-tab="people">Người chơi</button>
+        <button type="button" role="tab" id="tab-quest" aria-selected="false" data-tab="quest">Lộ trình</button>
+      </div>
+      <div class="pane" id="pane-chat" role="tabpanel"><div class="log" id="chatLog" aria-live="polite"></div></div>
+      <div class="pane" id="pane-people" role="tabpanel" hidden></div>
+      <div class="pane" id="pane-quest" role="tabpanel" hidden></div>
+      <form id="chatForm" style="display:flex; gap:6px; padding:10px; border-top:1px solid var(--line)" autocomplete="off">
+        <input type="text" id="chatInput" maxlength="140" placeholder="Gõ tin nhắn rồi nhấn Enter" style="flex:1" aria-label="Tin nhắn chat">
+        <button type="submit" class="primary">Gửi</button>
+      </form>
+    </aside>
+  </div>
+
+  <h2>Mỗi mốc trong prototype này thật đến đâu</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Mốc</th><th>Thử gì</th><th>Trong prototype</th><th>Bản thật</th></tr></thead>
+    <tbody>
+      <tr><td>M0</td><td>Đi quanh thành phố liền mạch, lên đồi, ra biển, thấy người khác</td><td>Bot thay người chơi thật, va chạm với nhà và cây</td><td>Colyseus, nhiều trình duyệt, server kiểm tra tốc độ</td></tr>
+      <tr><td>M1</td><td>Chat chỉ hiện với người ở gần, bong bóng, 6 emote, đổi màu áo</td><td>Lọc từ và giới hạn tốc độ chạy cục bộ</td><td>Lọc và giới hạn ở server</td></tr>
+      <tr><td>M2</td><td>Đi tới NPC trước từng tòa nhà, nhấn <kbd>E</kbd>, nghe và trả lời</td><td>"Nói" bằng cách gõ, thuật toán chấm giống bản thật</td><td>SpeechRecognition hoặc dịch vụ nhận dạng giọng, server chấm</td></tr>
+      <tr><td>M3</td><td>Xong nhiệm vụ thì rào chắn nơi kế tiếp được gỡ, mũi tên chỉ mục tiêu mới</td><td>Lưu ở trình duyệt, 3 nhiệm vụ thật, 7 nơi còn lại có rào nhưng chưa có nội dung</td><td>Server lưu tiến độ, đăng nhập Google</td></tr>
+      <tr><td>M4</td><td>Cổng 18+, báo cáo, chặn, tắt tiếng, giữ <kbd>V</kbd> để nói theo khoảng cách</td><td>Voice là hiệu ứng mô phỏng, báo cáo chỉ ghi trên máy bạn</td><td>LiveKit theo khoảng cách, hàng đợi báo cáo cho quản trị viên</td></tr>
+      <tr><td>M5</td><td>Cảm nhận độ mượt và khả năng chơi</td><td>Không đo hiệu năng thật</td><td>Phân tích người dùng, thử nghiệm kín, triển khai</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  /* ---------- Hằng số ---------- */
+  const STORAGE_KEY = "park-english-proto-v2";
+  const MIN_AGE = 18, WORLD = 96, PLAYER_R = 0.45, WALK = 5.5, RUN = 8.5, SEA_X = -84;
+  const NEAR_RANGE = 18, VOICE_RANGE = 14, INTERACT_R = 3.8, BARRIER_R = 5;
+  const CHAT_GAP_MS = 800, BUBBLE_MS = 6000, EMOTE_MS = 3000, HINT_AFTER = 3, TYPED_AFTER = 5;
+  const THRESHOLDS = { A1: 0.6, A2: 0.7, B1: 0.8, B2: 0.85 };
+  const EMOTES = { wave: "👋", clap: "👏", laugh: "😂", think: "🤔", dance: "💃", heart: "❤️" };
+  const COLORS = ["#4f9d69", "#3b82c4", "#d9822b", "#b5517c", "#7a5cc4", "#c9a227", "#2fa3a3", "#c4553b"];
+  const REPORT_REASONS = { harassment: "Quấy rối", spam: "Spam", inappropriate: "Nội dung không phù hợp", other: "Khác" };
+  const BLOCKED = ["fuck", "shit", "bitch", "asshole", "cunt", "dm", "vcl", "dit", "lon", "cac"];
+  const BLOCK_RE = new RegExp("(?<![\\p{L}\\p{N}])(" + BLOCKED.join("|") + ")(?![\\p{L}\\p{N}])", "giu");
+
+  /* Bố cục thành phố: tòa nhà quay mặt về công viên, NPC đứng trước cửa. */
+  const PATH = [
+    { id: "park", vi: "Công viên", en: "PARK", cefr: "A1", phase: "MVP", npc: "Sam", role: "hướng dẫn", pos: [0, -13], missions: ["park-greeting"], what: "Chào hỏi, giới thiệu, sở thích" },
+    { id: "cafe", vi: "Quán cà phê", en: "CAFÉ", cefr: "A1", phase: "MVP", npc: "Mia", role: "barista", b: { x: 0, z: -54, w: 12, d: 9, h: 6, wall: "#c9a27a", roof: "#7a4b33" }, missions: ["cafe-order-drink"], what: "Gọi đồ uống, hỏi giá, thanh toán" },
+    { id: "restaurant", vi: "Nhà hàng", en: "RESTAURANT", cefr: "A2", phase: "MVP", npc: "Leo", role: "phục vụ", b: { x: 40, z: -40, w: 16, d: 12, h: 7, wall: "#b66a5a", roof: "#5c2f2a" }, missions: ["restaurant-book-table"], what: "Đặt bàn, gọi món, tính tiền" },
+    { id: "market", vi: "Siêu thị và chợ", en: "MARKET", cefr: "A2", phase: "Beta", npc: "Hana", role: "thu ngân", b: { x: 58, z: 0, w: 18, d: 14, h: 6, wall: "#8fb36a", roof: "#46613a" }, missions: [], what: "Tìm đồ, giá, đổi trả" },
+    { id: "station", vi: "Bến xe và ga tàu", en: "STATION", cefr: "A2", phase: "Beta", npc: "Ken", role: "nhân viên bán vé", b: { x: 40, z: 40, w: 20, d: 10, h: 7, wall: "#8aa1b8", roof: "#3d4d5e" }, missions: [], what: "Hỏi đường, mua vé" },
+    { id: "clinic", vi: "Nhà thuốc và phòng khám", en: "CLINIC", cefr: "B1", phase: "Beta", npc: "Dr. Ana", role: "bác sĩ", b: { x: 0, z: 56, w: 14, d: 12, h: 8, wall: "#e6ece9", roof: "#5aa6a0" }, missions: [], what: "Triệu chứng, đặt lịch" },
+    { id: "hotel", vi: "Khách sạn", en: "HOTEL", cefr: "B1", phase: "v1", npc: "Tom", role: "lễ tân", b: { x: -40, z: 40, w: 14, d: 12, h: 16, wall: "#d8c7a6", roof: "#6b5a3c" }, missions: [], what: "Nhận phòng, báo sự cố" },
+    { id: "beach", vi: "Bãi biển", en: "BEACH BAR", cefr: "B1", phase: "v1", npc: "Lia", role: "chủ quầy", b: { x: -72, z: -4, w: 6, d: 5, h: 4, wall: "#e0b673", roof: "#a1673a" }, missions: [], what: "Thuê đồ, kế hoạch" },
+    { id: "hiking-trail", vi: "Đường mòn leo núi", en: "TRAILHEAD", cefr: "B1", phase: "v1", npc: "Ray", role: "kiểm lâm", b: { x: -30, z: -64, w: 5, d: 4, h: 3, wall: "#8b6b4a", roof: "#4e3a28" }, missions: [], what: "Chỉ đường, an toàn" },
+    { id: "office", vi: "Văn phòng", en: "OFFICE", cefr: "B2", phase: "v1", npc: "Ms. Kim", role: "quản lý", b: { x: -56, z: -34, w: 14, d: 14, h: 24, wall: "#7e9bb5", roof: "#44566a", glass: true }, missions: [], what: "Phỏng vấn, họp" }
+  ];
+  PATH.forEach((dest) => {
+    if (dest.b) {
+      const len = Math.hypot(dest.b.x, dest.b.z); const off = dest.b.d / 2 + 4.2;
+      dest.pos = [dest.b.x - (dest.b.x / len) * off, dest.b.z - (dest.b.z / len) * off];
+    }
+  });
+
+  const MISSIONS = {
+    "park-greeting": { id: "park-greeting", destinationId: "park", title: "Chào hỏi ở công viên", cefr: "A1", rewardXp: 20, turns: [
+      { npcLines: ["Hello! Welcome to the park. How are you today?", "Hi there! Welcome. How are you today?"], translation: "Xin chào! Chào mừng đến công viên. Hôm nay bạn thế nào?",
+        accepted: ["I am fine, thank you", "I'm good, thank you", "I am good, thanks", "I'm fine, thanks", "I am great, thank you"], hint: "Try: I'm fine, thank you." },
+      { npcLines: ["Nice to meet you. Do you like this park?", "Nice to meet you! Is this your first time here?"], translation: "Rất vui được gặp bạn. Bạn có thích công viên này không?",
+        accepted: ["Yes, I like it", "Yes, I do", "Yes, I like this park", "Yes, it is beautiful"], hint: "Try: Yes, I like it." }] },
+    "cafe-order-drink": { id: "cafe-order-drink", destinationId: "cafe", title: "Gọi một ly đồ uống", cefr: "A1", rewardXp: 30, turns: [
+      { npcLines: ["Good morning! What would you like to drink?", "Hello! What can I get for you?"], translation: "Chào buổi sáng! Bạn muốn uống gì?",
+        accepted: ["I would like a coffee, please", "I'd like a coffee, please", "Can I have a coffee, please", "A coffee, please"], hint: "Try: I would like a coffee, please." },
+      { npcLines: ["Hot or iced?", "Would you like it hot or iced?"], translation: "Nóng hay đá?", accepted: ["Hot, please", "Iced, please", "Hot", "Iced"], hint: "Try: Hot, please." },
+      { npcLines: ["That is three dollars. Would you like anything else?", "Three dollars, please. Anything else?"], translation: "Ba đô la. Bạn có muốn gì nữa không?",
+        accepted: ["No, thank you", "No, that's all", "That is all, thank you"], hint: "Try: No, thank you." }] },
+    "restaurant-book-table": { id: "restaurant-book-table", destinationId: "restaurant", title: "Đặt bàn và gọi món", cefr: "A2", rewardXp: 40, turns: [
+      { npcLines: ["Good evening! Do you have a reservation?", "Welcome! Have you made a reservation?"], translation: "Chào buổi tối! Bạn đã đặt bàn chưa?",
+        accepted: ["No, I do not have a reservation", "No, I don't have a reservation", "No, we do not have a reservation", "No, we don't have a reservation"], hint: "Try: No, I don't have a reservation." },
+      { npcLines: ["How many people are in your group?", "How many people, please?"], translation: "Nhóm bạn có bao nhiêu người?",
+        accepted: ["Two people, please", "Table for two, please", "We are two", "There are two of us"], hint: "Try: Table for two, please." },
+      { npcLines: ["Here is the menu. What would you like to order?", "Are you ready to order?"], translation: "Đây là thực đơn. Bạn muốn gọi món gì?",
+        accepted: ["I would like the chicken, please", "I'd like the chicken, please", "Can I have the chicken, please", "The chicken, please"], hint: "Try: I would like the chicken, please." }] }
+  };
+
+  const BOT_LINES = ["Hi! Nice park today.", "Anyone want to practice English?", "I like coffee in the morning.", "How are you today?", "The weather is great!", "I am learning to order food.", "See you at the cafe!", "Good luck with the mission!"];
+  const BOT_REPLIES = ["Nice to meet you!", "Hello! How are you?", "That sounds good.", "Me too!"];
+  const BOT_DEFS = [{ name: "Linh", color: "#3b82c4" }, { name: "Minh", color: "#d9822b" }, { name: "Anna", color: "#b5517c" }, { name: "Tuan", color: "#7a5cc4" }, { name: "Mai", color: "#2fa3a3" }];
+
+  /* ---------- Chấm câu nói (cùng thuật toán với packages/shared) ---------- */
+  const CONTRACTIONS = { "i'm": "i am", "i'd": "i would", "i'll": "i will", "i've": "i have", "it's": "it is", "that's": "that is", "what's": "what is", "you're": "you are", "we're": "we are", "can't": "cannot", "don't": "do not", "isn't": "is not" };
+  const normalize = (text) => text.toLowerCase().replace(/[’]/g, "'").replace(/[^a-z0-9'\s]/g, " ").split(/\s+/).filter(Boolean).flatMap((w) => (CONTRACTIONS[w] || w).split(" "));
+  const charDistance = (a, b) => {
+    const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i += 1) {
+      let diag = prev[0]; prev[0] = i;
+      for (let j = 1; j <= b.length; j += 1) { const above = prev[j]; prev[j] = Math.min(above + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1)); diag = above; }
+    }
+    return prev[b.length];
+  };
+  const wordCost = (a, b) => (a === b ? 0 : charDistance(a, b) / Math.max(a.length, b.length));
+  const scoreUtterance = (heard, target) => {
+    const h = normalize(heard), t = normalize(target); if (!t.length) { return 0; }
+    const prev = Array.from({ length: t.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= h.length; i += 1) {
+      let diag = prev[0]; prev[0] = i;
+      for (let j = 1; j <= t.length; j += 1) { const above = prev[j]; prev[j] = Math.min(above + 1, prev[j - 1] + 1, diag + wordCost(h[i - 1], t[j - 1])); diag = above; }
+    }
+    return Math.max(0, 1 - prev[t.length] / Math.max(h.length, t.length));
+  };
+  const matchTurn = (turn, text, cefr) => {
+    let best = 0; turn.accepted.forEach((s) => { best = Math.max(best, scoreUtterance(text, s)); });
+    return { score: best, passed: best >= THRESHOLDS[cefr] };
+  };
+
+  /* ---------- Trạng thái ---------- */
+  const $ = (selector) => document.querySelector(selector);
+  const state = { profile: null, progress: { completed: [], stars: {}, xp: 0 }, blocked: new Set(), muted: new Set(), reports: [], chat: [], talking: false, lastChatAt: 0, session: null, explore: false };
+  const load = () => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      if (raw.profile) { state.profile = raw.profile; } if (raw.progress) { state.progress = raw.progress; } if (Array.isArray(raw.blocked)) { state.blocked = new Set(raw.blocked); }
+    } catch (error) { /* lưu trữ có thể bị chặn */ }
+  };
+  const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile: state.profile, progress: state.progress, blocked: [...state.blocked] })); } catch (error) { /* bỏ qua */ } };
+  const isComplete = (dest) => dest.missions.length > 0 && dest.missions.every((id) => state.progress.completed.includes(id));
+  const progressOpen = () => PATH.map((dest, i) => i === 0 || isComplete(PATH[i - 1]));
+  const isOpen = (i) => state.explore || progressOpen()[i];
+  const nextGoal = () => { const open = progressOpen(); for (let i = 0; i < PATH.length; i += 1) { if (open[i] && PATH[i].missions.length && !isComplete(PATH[i])) { return i; } } return -1; };
+
+  let toastTimer = 0;
+  const toast = (text) => { const el = $("#toast"); el.textContent = text; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 3600); };
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const clock = (t) => new Date(t).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  const speak = (text) => { try { if (!("speechSynthesis" in window)) { return; } window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.9; window.speechSynthesis.speak(u); } catch (error) { /* TTS không khả dụng */ } };
+
+  /* ---------- Địa hình ---------- */
+  const rng = (() => { let a = 20260617; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();
+  const HILL = { x: -42, z: -84, s: 11, h: 14 };
+  const terrainHeight = (x, z) => {
+    const hill = HILL.h * Math.exp(-(((x - HILL.x) ** 2 + (z - HILL.z) ** 2) / (2 * HILL.s * HILL.s)));
+    const shore = x < -70 ? -0.12 * (-x - 70) : 0;
+    return hill + shore;
+  };
+
+  /* ---------- Three.js ---------- */
+  const stage = $("#stage");
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.domElement.className = "gl"; stage.insertBefore(renderer.domElement, stage.firstChild);
+  const scene = new THREE.Scene();
+  const SKY = new THREE.Color("#bcd9ee"); scene.background = SKY; scene.fog = new THREE.Fog(SKY, 70, 210);
+  const camera = new THREE.PerspectiveCamera(52, 16 / 10, 0.3, 400);
+  scene.add(new THREE.HemisphereLight(0xdcecff, 0x6b8f5a, 0.75));
+  const sun = new THREE.DirectionalLight(0xfff1d6, 0.85); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -48, right: 48, top: 48, bottom: -48, near: 1, far: 200 }); sun.shadow.bias = -0.0006; scene.add(sun, sun.target);
+  const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(7, 16, 16), new THREE.MeshBasicMaterial({ color: 0xfff6cf, fog: false })); scene.add(sunDisc);
+  const mat = (color) => new THREE.MeshLambertMaterial({ color });
+  const world = new THREE.Group(); scene.add(world);
+  const addMesh = (geo, material, x, y, z, opts = {}) => {
+    const m = new THREE.Mesh(geo, material); m.position.set(x, y, z); m.castShadow = opts.cast !== false; m.receiveShadow = opts.receive !== false;
+    if (opts.ry) { m.rotation.y = opts.ry; } (opts.parent || world).add(m); return m;
+  };
+
+  // mặt đất có độ cao: đồi phía tây bắc, bãi cát dốc ra biển phía tây
+  (() => {
+    const geo = new THREE.PlaneGeometry(240, 240, 120, 120); geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position; const colors = new Float32Array(pos.count * 3); const c = new THREE.Color();
+    for (let i = 0; i < pos.count; i += 1) {
+      const x = pos.getX(i), z = pos.getZ(i); const h = terrainHeight(x, z); pos.setY(i, h);
+      const sand = Math.min(1, Math.max(0, (-x - 62) / 6)); const rock = Math.min(1, Math.max(0, (h - 7) / 5));
+      c.set("#6aa86b").lerp(new THREE.Color("#4f8f55"), (Math.sin(x * 0.21) + Math.cos(z * 0.17)) * 0.25 + 0.25);
+      c.lerp(new THREE.Color("#dcc58f"), sand).lerp(new THREE.Color("#8d8a82"), rock);
+      colors.set([c.r, c.g, c.b], i * 3);
+    }
+    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3)); geo.computeVertexNormals();
+    const ground = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true })); ground.receiveShadow = true; world.add(ground);
+  })();
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(140, 260), new THREE.MeshLambertMaterial({ color: 0x3a8fc2, transparent: true, opacity: 0.88 }));
+  sea.rotation.x = -Math.PI / 2; sea.position.set(-146, -0.55, 0); world.add(sea);
+  addMesh(new THREE.BoxGeometry(0.9, 0.05, 150), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.7 }), -75.8, -0.45, 0, { cast: false, receive: false });
+
+  // đường và vỉa hè
+  const flat = (geo, color, y) => { const m = new THREE.Mesh(geo, mat(color)); m.rotation.x = -Math.PI / 2; m.position.y = y; m.receiveShadow = true; world.add(m); return m; };
+  flat(new THREE.CircleGeometry(27.5, 64), "#79b867", 0.01);
+  flat(new THREE.RingGeometry(27.5, 29.5, 64), "#b9bdb8", 0.02);
+  flat(new THREE.RingGeometry(29.5, 35, 64), "#3b4046", 0.03);
+  flat(new THREE.RingGeometry(32.2, 32.4, 64), "#e8e2c4", 0.04);
+  flat(new THREE.RingGeometry(35, 37.2, 64), "#b9bdb8", 0.02);
+  const roadFor = (cx, cz, width, y) => {
+    const len = Math.hypot(cx, cz); const r = Math.atan2(cx, cz); const from = 35; const to = len - 5;
+    const m = addMesh(new THREE.BoxGeometry(width, 0.08, to - from), mat("#454a50"), (cx / len) * ((from + to) / 2), y, (cz / len) * ((from + to) / 2), { ry: r, cast: false });
+    return m;
+  };
+  PATH.forEach((dest) => { if (dest.b) { roadFor(dest.b.x, dest.b.z, 5, 0.04); } });
+  [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(([dx, dz]) => addMesh(new THREE.BoxGeometry(dx ? 25 : 3, 0.05, dz ? 25 : 3), mat("#d9cfae"), dx * 12.5, 0.03, dz * 12.5, { cast: false }));
+
+  /* Va chạm */
+  const obstacles = [];
+  const addCircle = (x, z, r, active) => obstacles.push({ t: "c", x, z, r, active });
+  const addBox = (x, z, hw, hd, rot) => obstacles.push({ t: "b", x, z, hw, hd, rot });
+  const resolveCollisions = (p) => {
+    for (const o of obstacles) {
+      if (o.active && !o.active()) { continue; }
+      if (o.t === "c") {
+        const dx = p.x - o.x, dz = p.z - o.z; const d = Math.hypot(dx, dz); const min = o.r + PLAYER_R;
+        if (d < min) { const k = d > 1e-4 ? min / d : 0; if (k) { p.x = o.x + dx * k; p.z = o.z + dz * k; } else { p.x += min; } }
+      } else {
+        const dx = p.x - o.x, dz = p.z - o.z; const cs = Math.cos(o.rot), sn = Math.sin(o.rot);
+        let lx = dx * cs - dz * sn, lz = dx * sn + dz * cs; const ox = o.hw + PLAYER_R - Math.abs(lx), oz = o.hd + PLAYER_R - Math.abs(lz);
+        if (ox > 0 && oz > 0) {
+          if (ox < oz) { lx += (lx >= 0 ? 1 : -1) * ox; } else { lz += (lz >= 0 ? 1 : -1) * oz; }
+          p.x = o.x + lx * cs + lz * sn; p.z = o.z - lx * sn + lz * cs;
+        }
+      }
+    }
+  };
+
+  /* Tòa nhà với mặt tiền vẽ bằng canvas */
+  const drawFacade = (w, h, b, withDoor) => {
+    const PX = 28; const W = Math.round(w * PX), H = Math.round(h * PX); const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d");
+    g.fillStyle = b.wall; g.fillRect(0, 0, W, H);
+    const rect = (x0, y0, x1, y1) => [x0 * PX, H - y1 * PX, (x1 - x0) * PX, (y1 - y0) * PX];
+    const pane = (x0, y0, x1, y1) => { const [x, y, ww, hh] = rect(x0, y0, x1, y1); const grad = g.createLinearGradient(0, y, 0, y + hh); grad.addColorStop(0, b.glass ? "#a8d4f0" : "#8ec2e4"); grad.addColorStop(1, b.glass ? "#4f86b3" : "#5e92b8"); g.fillStyle = grad; g.fillRect(x, y, ww, hh); g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2; g.strokeRect(x, y, ww, hh); };
+    if (b.glass) { for (let fl = 0; fl < Math.floor((h - 1) / 2.6); fl += 1) { for (let k = 0; k < Math.floor(w / 2.4); k += 1) { pane(0.5 + k * 2.4, 1 + fl * 2.6, 0.5 + k * 2.4 + 2, 1 + fl * 2.6 + 1.9); } } }
+    else {
+      const rows = Math.max(0, Math.floor((h - 3.8) / 3)); const cols = Math.max(2, Math.floor(w / 3.2));
+      for (let r = 0; r < rows; r += 1) { for (let k = 0; k < cols; k += 1) { const cw = w / cols; pane(k * cw + cw * 0.25, 3.8 + r * 3, k * cw + cw * 0.75, 3.8 + r * 3 + 1.6); } }
+      if (withDoor) { pane(0.8, 0.9, w / 2 - 1.2, 2.9); pane(w / 2 + 1.2, 0.9, w - 0.8, 2.9); } else { pane(w * 0.2, 0.9, w * 0.45, 2.9); pane(w * 0.55, 0.9, w * 0.8, 2.9); }
+    }
+    if (withDoor) { const [x, y, ww, hh] = rect(w / 2 - 0.8, 0, w / 2 + 0.8, 2.6); g.fillStyle = "#3a2a20"; g.fillRect(x, y, ww, hh); g.fillStyle = "#e6c36a"; g.fillRect(x + ww * 0.78, y + hh * 0.5, 4, 8); }
+    const tex = new THREE.CanvasTexture(c); tex.anisotropy = 4; return tex;
+  };
+  const signTexture = (text) => {
+    const c = document.createElement("canvas"); c.width = 512; c.height = 128; const g = c.getContext("2d");
+    g.fillStyle = "#1f2a26"; g.fillRect(0, 0, 512, 128); g.strokeStyle = "#e6c36a"; g.lineWidth = 6; g.strokeRect(6, 6, 500, 116);
+    g.fillStyle = "#fff6d6"; g.font = "700 54px 'Space Grotesk', Arial, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, 256, 68, 480);
+    return new THREE.CanvasTexture(c);
+  };
+  const buildBuilding = (dest) => {
+    const b = dest.b; const group = new THREE.Group(); group.position.set(b.x, terrainHeight(b.x, b.z), b.z); group.rotation.y = Math.atan2(-b.x, -b.z); world.add(group);
+    const front = new THREE.MeshLambertMaterial({ map: drawFacade(b.w, b.h, b, true) }), side = new THREE.MeshLambertMaterial({ map: drawFacade(b.d, b.h, b, false) }), back = new THREE.MeshLambertMaterial({ map: drawFacade(b.w, b.h, b, false) }), roof = mat(b.roof);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(b.w, b.h, b.d), [side, side, roof, roof, front, back]); body.position.y = b.h / 2; body.castShadow = true; body.receiveShadow = true; group.add(body);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(b.w + 0.6, 0.5, b.d + 0.6), roof); cap.position.y = b.h + 0.25; cap.castShadow = true; group.add(cap);
+    const awning = new THREE.Mesh(new THREE.BoxGeometry(Math.min(b.w - 1, 5), 0.18, 1.6), mat("#c0392b")); awning.position.set(0, 3.1, b.d / 2 + 0.8); awning.castShadow = true; group.add(awning);
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(b.w - 1, 6.5), Math.min(b.w - 1, 6.5) / 4), new THREE.MeshBasicMaterial({ map: signTexture(dest.en) })); sign.position.set(0, Math.min(b.h - 0.9, 4.3), b.d / 2 + 0.06); group.add(sign);
+    const rot = group.rotation.y; addBox(b.x, b.z, b.w / 2, b.d / 2, rot);
+  };
+  PATH.forEach((dest) => { if (dest.b) { buildBuilding(dest); } });
+
+  /* Cây trồng bằng InstancedMesh */
+  const nearSegment = (px, pz, ax, az, bx, bz) => { const dx = bx - ax, dz = bz - az; const t = Math.max(0, Math.min(1, ((px - ax) * dx + (pz - az) * dz) / (dx * dx + dz * dz))); return Math.hypot(px - (ax + dx * t), pz - (az + dz * t)); };
+  const TRAIL = [[-27, -59], [-31, -66], [-38, -72], [-34, -78], [-40, -83], [-44, -87]];
+  const clearForTree = (x, z) => {
+    const r = Math.hypot(x, z);
+    if (r > 27.5 && r < 38) { return false; }
+    if (r < 7 || (r < 27.5 && (Math.abs(x) < 2.2 || Math.abs(z) < 2.2))) { return false; }
+    if (x < -64 && z > -70 && z < 40) { return false; }
+    for (const d of PATH) {
+      if (d.b && (Math.hypot(x - d.b.x, z - d.b.z) < Math.max(d.b.w, d.b.d) * 0.8 + 3 || nearSegment(x, z, 0, 0, d.b.x, d.b.z) < 4.5)) { return false; }
+      if (Math.hypot(x - d.pos[0], z - d.pos[1]) < 8) { return false; }
+    }
+    for (let i = 0; i < TRAIL.length - 1; i += 1) { if (nearSegment(x, z, TRAIL[i][0], TRAIL[i][1], TRAIL[i + 1][0], TRAIL[i + 1][1]) < 3) { return false; } }
+    return true;
+  };
+  (() => {
+    const list = [];
+    for (let i = 0; i < 2400 && list.length < 260; i += 1) {
+      const x = (rng() - 0.5) * 190, z = (rng() - 0.5) * 190; const r = Math.hypot(x, z);
+      if (r < 27.5 && rng() > 0.35) { continue; }
+      if (clearForTree(x, z)) { list.push({ x, z, s: 0.8 + rng() * 0.7, tone: rng() }); }
+    }
+    const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.3, 1.8, 6), mat("#6b4c32"), list.length);
+    const crowns = new THREE.InstancedMesh(new THREE.ConeGeometry(1.6, 4.2, 7), new THREE.MeshLambertMaterial({ color: 0xffffff }), list.length);
+    const dummy = new THREE.Object3D(); const col = new THREE.Color();
+    list.forEach((t, i) => {
+      const y = terrainHeight(t.x, t.z); dummy.rotation.set(0, t.tone * 6, 0); dummy.scale.set(t.s, t.s, t.s);
+      dummy.position.set(t.x, y + 0.9 * t.s, t.z); dummy.updateMatrix(); trunks.setMatrixAt(i, dummy.matrix);
+      dummy.position.set(t.x, y + (1.8 + 2.1) * t.s, t.z); dummy.updateMatrix(); crowns.setMatrixAt(i, dummy.matrix);
+      col.set("#2f7d4a").lerp(new THREE.Color("#5ea85a"), t.tone); crowns.setColorAt(i, col); addCircle(t.x, t.z, 0.5 * t.s);
+    });
+    [trunks, crowns].forEach((m) => { m.castShadow = true; m.receiveShadow = true; world.add(m); });
+  })();
+
+  // đèn đường, ghế, đài phun nước, xe đỗ
+  for (let i = 0; i < 28; i += 1) {
+    const a = (i / 28) * Math.PI * 2; const x = Math.cos(a) * 36.2, z = Math.sin(a) * 36.2;
+    addMesh(new THREE.CylinderGeometry(0.08, 0.1, 4.2, 6), mat("#40464c"), x, 2.1, z); addMesh(new THREE.SphereGeometry(0.28, 8, 8), new THREE.MeshBasicMaterial({ color: 0xfff1b8 }), x, 4.3, z, { cast: false }); addCircle(x, z, 0.2);
+  }
+  for (let i = 0; i < 6; i += 1) {
+    const a = (i / 6) * Math.PI * 2 + 0.5; const x = Math.cos(a) * 19, z = Math.sin(a) * 19;
+    const bench = new THREE.Group(); bench.position.set(x, 0, z); bench.rotation.y = Math.atan2(-x, -z); world.add(bench);
+    addMesh(new THREE.BoxGeometry(2.2, 0.12, 0.7), mat("#9b6b43"), 0, 0.5, 0, { parent: bench }); addMesh(new THREE.BoxGeometry(2.2, 0.6, 0.1), mat("#8a5c38"), 0, 0.85, -0.3, { parent: bench });
+    addMesh(new THREE.BoxGeometry(0.12, 0.5, 0.6), mat("#40464c"), -0.9, 0.25, 0, { parent: bench }); addMesh(new THREE.BoxGeometry(0.12, 0.5, 0.6), mat("#40464c"), 0.9, 0.25, 0, { parent: bench }); addCircle(x, z, 0.9);
+  }
+  addMesh(new THREE.CylinderGeometry(3.6, 3.8, 0.7, 28), mat("#a9aeb0"), 0, 0.35, 0); addMesh(new THREE.CylinderGeometry(3.1, 3.1, 0.1, 28), new THREE.MeshLambertMaterial({ color: 0x4aa3d8, transparent: true, opacity: 0.85 }), 0, 0.62, 0, { cast: false });
+  addMesh(new THREE.CylinderGeometry(0.4, 0.55, 2.4, 12), mat("#c8cdd0"), 0, 1.5, 0); addMesh(new THREE.SphereGeometry(0.9, 12, 10), mat("#c8cdd0"), 0, 2.9, 0); addCircle(0, 0, 3.9);
+  ["#c0392b", "#2c6fa8", "#e0e0e0", "#2f8f5b", "#d9a21b", "#444"].forEach((color, i) => {
+    const a = (i / 6) * Math.PI * 2 + 0.25; const x = Math.cos(a) * 33.6, z = Math.sin(a) * 33.6; const car = new THREE.Group(); car.position.set(x, 0, z); car.rotation.y = -a; world.add(car);
+    addMesh(new THREE.BoxGeometry(4, 0.8, 1.9), mat(color), 0, 0.7, 0, { parent: car }); addMesh(new THREE.BoxGeometry(2.1, 0.7, 1.7), new THREE.MeshLambertMaterial({ color: 0x9cc4e0 }), -0.2, 1.4, 0, { parent: car });
+    [[1.3, 0.9], [-1.3, 0.9], [1.3, -0.9], [-1.3, -0.9]].forEach(([wx, wz]) => { const wheel = addMesh(new THREE.CylinderGeometry(0.38, 0.38, 0.3, 10), mat("#222"), wx, 0.38, wz, { parent: car }); wheel.rotation.x = Math.PI / 2; }); addCircle(x, z, 1.7);
+  });
+
+  // bãi biển, đường mòn, đá
+  [[-69, 6, "#c0392b"], [-67, -12, "#2c6fa8"], [-71, 12, "#d9a21b"]].forEach(([x, z, color]) => {
+    const y = terrainHeight(x, z); addMesh(new THREE.CylinderGeometry(0.06, 0.06, 2.6, 6), mat("#e8e2c4"), x, y + 1.3, z); addMesh(new THREE.ConeGeometry(1.9, 0.7, 12), mat(color), x, y + 2.7, z); addMesh(new THREE.BoxGeometry(1.4, 0.1, 2.2), mat("#f2f2f2"), x + 1.8, y + 0.1, z + 0.4, { cast: false }); addCircle(x, z, 0.3);
+  });
+  for (let i = 0; i < TRAIL.length - 1; i += 1) {
+    const [ax, az] = TRAIL[i], [bx, bz] = TRAIL[i + 1]; const len = Math.hypot(bx - ax, bz - az); const steps = Math.ceil(len / 1.4);
+    for (let k = 0; k < steps; k += 1) { const t = k / steps; const x = ax + (bx - ax) * t, z = az + (bz - az) * t; addMesh(new THREE.BoxGeometry(1.7, 0.1, 1.7), mat("#9a7b55"), x, terrainHeight(x, z) + 0.05, z, { cast: false }); }
+  }
+  for (let i = 0; i < 16; i += 1) {
+    const a = rng() * Math.PI * 2, r = 6 + rng() * 14; const x = HILL.x + Math.cos(a) * r, z = HILL.z + Math.sin(a) * r;
+    if (!clearForTree(x, z) && Math.hypot(x - HILL.x, z - HILL.z) < 6) { continue; }
+    const s = 0.7 + rng() * 1.1; const rock = addMesh(new THREE.DodecahedronGeometry(s, 0), mat("#8b8f93"), x, terrainHeight(x, z) + s * 0.3, z); rock.rotation.set(rng(), rng(), rng()); addCircle(x, z, s * 0.8);
+  }
+  addMesh(new THREE.CylinderGeometry(0.08, 0.08, 14, 6), mat("#d8d8d8"), HILL.x - 2, terrainHeight(HILL.x - 2, HILL.z - 4) + 7, HILL.z - 4); // cột cờ trên đỉnh
+  addMesh(new THREE.BoxGeometry(2, 1.2, 0.05), mat("#c0392b"), HILL.x - 1, terrainHeight(HILL.x - 2, HILL.z - 4) + 13, HILL.z - 4);
+
+  // mây
+  const clouds = [];
+  for (let i = 0; i < 9; i += 1) {
+    const g = new THREE.Group(); for (let k = 0; k < 4; k += 1) { const s = new THREE.Mesh(new THREE.SphereGeometry(5 + rng() * 4, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88, fog: false })); s.position.set(k * 7 - 10, rng() * 2, rng() * 4); s.scale.y = 0.45; g.add(s); }
+    g.position.set((rng() - 0.5) * 320, 70 + rng() * 25, (rng() - 0.5) * 320); scene.add(g); clouds.push(g);
+  }
+
+  /* ---------- Nhân vật ---------- */
+  const makeAvatar = (color, opts = {}) => {
+    const g = new THREE.Group(); const skin = opts.skin || "#f0c9a0";
+    const mk = (geo, c, x, y, z) => { const m = new THREE.Mesh(geo, mat(c)); m.position.set(x, y, z); m.castShadow = true; return m; };
+    g.add(mk(new THREE.BoxGeometry(0.7, 0.85, 0.4), color, 0, 1.18, 0)); g.add(mk(new THREE.SphereGeometry(0.28, 16, 14), skin, 0, 1.87, 0));
+    const hair = mk(new THREE.SphereGeometry(0.3, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), opts.hair || "#2b2118", 0, 1.9, -0.02); g.add(hair);
+    const limb = (x, y, c, len) => { const pivot = new THREE.Group(); pivot.position.set(x, y, 0); const m = mk(new THREE.CylinderGeometry(0.11, 0.1, len, 8), c, 0, -len / 2, 0); pivot.add(m); g.add(pivot); return pivot; };
+    g.userData.legL = limb(-0.18, 0.78, "#2f3a52", 0.78); g.userData.legR = limb(0.18, 0.78, "#2f3a52", 0.78); g.userData.armL = limb(-0.44, 1.56, color, 0.7); g.userData.armR = limb(0.44, 1.56, color, 0.7);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.8, 0.95, 32), new THREE.MeshBasicMaterial({ color: 0x2ee6a6, side: THREE.DoubleSide, transparent: true, opacity: 0.8 })); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.06; ring.visible = false; g.add(ring); g.userData.ring = ring;
+    g.scale.setScalar(opts.scale || 1); return g;
+  };
+  const animateAvatar = (mesh, speed, t) => {
+    const swing = Math.sin(t * 9) * Math.min(1, speed / 4) * 0.7; const u = mesh.userData;
+    u.legL.rotation.x = swing; u.legR.rotation.x = -swing; u.armL.rotation.x = -swing * 0.8; u.armR.rotation.x = swing * 0.8;
+  };
+  const labels = $("#labels"); const entities = [];
+  const makeEntity = (id, name, color, x, z, kind, opts) => {
+    const mesh = makeAvatar(color, opts); mesh.position.set(x, terrainHeight(x, z), z); world.add(mesh);
+    const tag = document.createElement("div"); tag.className = "tag" + (kind === "npc" ? " npc" : ""); tag.innerHTML = '<span class="emo" hidden></span><span class="bub" hidden></span><span class="nm"></span>'; tag.querySelector(".nm").textContent = name; labels.appendChild(tag);
+    const e = { id, name, kind, mesh, tag, bubUntil: 0, emoUntil: 0, ry: 0, speed: 0 }; entities.push(e); return e;
+  };
+  const setBubble = (e, text) => { if (state.blocked.has(e.id)) { return; } const el = e.tag.querySelector(".bub"); el.textContent = text; el.hidden = false; e.bubUntil = performance.now() + BUBBLE_MS; };
+  const setEmote = (e, key) => { if (state.blocked.has(e.id)) { return; } const el = e.tag.querySelector(".emo"); el.textContent = EMOTES[key]; el.hidden = false; e.emoUntil = performance.now() + EMOTE_MS; el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; };
+
+  let me = null; const bots = []; const npcs = [];
+  const barrierGroups = []; const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 60, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0xffd76a, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+  scene.add(beacon); beacon.visible = false;
+
+  const buildPeople = () => {
+    me = makeEntity("me", state.profile.name, state.profile.color, 0, 8, "me"); me.mesh.rotation.y = Math.PI;
+    PATH.forEach((dest, i) => {
+      const [x, z] = dest.pos; const npc = makeEntity("npc-" + dest.id, dest.npc, "#d9a21b", x, z, "npc", { hair: "#4a3326" });
+      npc.dest = dest; npc.index = i; const len = Math.hypot(x, z) || 1; npc.mesh.rotation.y = Math.atan2(-x, -z); npc.ry = npc.mesh.rotation.y; npcs.push(npc); addCircle(x, z, 0.6);
+      if (i > 0) {
+        const g = new THREE.Group(); g.position.set(x, terrainHeight(x, z), z);
+        for (let k = 0; k < 10; k += 1) {
+          const a = (k / 10) * Math.PI * 2; const px = Math.cos(a) * BARRIER_R, pz = Math.sin(a) * BARRIER_R;
+          const post = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 1.4, 6), mat("#e8e8e8")); post.position.set(px, 0.7, pz); post.castShadow = true; g.add(post);
+          const a2 = ((k + 1) / 10) * Math.PI * 2; const mx = (px + Math.cos(a2) * BARRIER_R) / 2, mz = (pz + Math.sin(a2) * BARRIER_R) / 2;
+          const tape = new THREE.Mesh(new THREE.BoxGeometry(2 * BARRIER_R * Math.sin(Math.PI / 10), 0.18, 0.04), mat(k % 2 ? "#c0392b" : "#f1f1f1")); tape.position.set(mx, 1.05, mz); tape.rotation.y = -Math.atan2(Math.sin(a2) * BARRIER_R - pz, Math.cos(a2) * BARRIER_R - px); g.add(tape);
+        }
+        world.add(g); barrierGroups[i] = g; addCircle(x, z, BARRIER_R, () => !isOpen(i));
+      }
+    });
+    BOT_DEFS.forEach((def, i) => {
+      const a = (i / BOT_DEFS.length) * Math.PI * 2; const x = Math.cos(a) * 14, z = Math.sin(a) * 14; const bot = makeEntity("bot-" + def.name, def.name, def.color, x, z, "bot");
+      Object.assign(bot, { target: { x, z }, nextMove: performance.now() + 1500 + i * 700, nextChat: performance.now() + 4000 + i * 3500, nextEmote: performance.now() + 7000 + i * 4000, nextVoice: performance.now() + 6000 + i * 5000, speakUntil: 0 }); bots.push(bot);
+    });
+  };
+
+  /* ---------- Vòng lặp ---------- */
+  const keys = new Set(); let yaw = 0; let dialogOpen = false; let nearNpc = null;
+  const KEY_MAP = { KeyW: "up", ArrowUp: "up", KeyS: "down", ArrowDown: "down", KeyA: "left", ArrowLeft: "left", KeyD: "right", ArrowRight: "right" };
+  const angleLerp = (from, to, t) => { let d = ((to - from + Math.PI) % (Math.PI * 2)) - Math.PI; if (d < -Math.PI) { d += Math.PI * 2; } return from + d * t; };
+  const dist = (a, b) => Math.hypot(a.mesh.position.x - b.mesh.position.x, a.mesh.position.z - b.mesh.position.z);
+  const camTarget = new THREE.Vector3(); const camPos = new THREE.Vector3(); const camLook = new THREE.Vector3(); let camInit = false;
+
+  const updateCamera = (dt) => {
+    const p = me.mesh.position;
+    if (dialogOpen && nearNpc) {
+      const n = nearNpc.mesh.position; const dx = n.x - p.x, dz = n.z - p.z; const len = Math.hypot(dx, dz) || 1; const ux = dx / len, uz = dz / len;
+      camTarget.set(p.x - ux * 4.6 - uz * 1.4, p.y + 2.5, p.z - uz * 4.6 + ux * 1.4); camLook.set(n.x - ux * 0.6, n.y + 1.5, n.z - uz * 0.6);
+    } else {
+      const D = 13, H = 8; camTarget.set(p.x + Math.sin(yaw) * D, p.y + H, p.z + Math.cos(yaw) * D); camLook.set(p.x, p.y + 1.4, p.z);
+    }
+    if (!camInit) { camPos.copy(camTarget); camInit = true; }
+    camPos.lerp(camTarget, 1 - Math.exp(-6 * dt)); camera.position.copy(camPos);
+    const minY = terrainHeight(camPos.x, camPos.z) + 1.2; if (camera.position.y < minY) { camera.position.y = minY; }
+    camera.lookAt(camLook);
+    sun.position.set(p.x + 40, 70, p.z + 30); sun.target.position.set(p.x, 0, p.z); sunDisc.position.set(camera.position.x + 160, 120, camera.position.z + 90);
+  };
+
+  const botStep = (bot, now, dt) => {
+    const p = bot.mesh.position; const dx = bot.target.x - p.x, dz = bot.target.z - p.z; const d = Math.hypot(dx, dz); bot.speed = 0;
+    if (d > 0.3) { p.x += (dx / d) * 1.9 * dt; p.z += (dz / d) * 1.9 * dt; bot.speed = 1.9; bot.ry = angleLerp(bot.ry, Math.atan2(dx, dz), 0.2); bot.mesh.rotation.y = bot.ry; }
+    else if (now > bot.nextMove) { const a = Math.random() * Math.PI * 2, r = 6 + Math.random() * 21; bot.target = { x: Math.cos(a) * r, z: Math.sin(a) * r }; bot.nextMove = now + 3000 + Math.random() * 4000; }
+    if (now > bot.nextChat) { bot.nextChat = now + 9000 + Math.random() * 9000; botSay(bot, BOT_LINES[Math.floor(Math.random() * BOT_LINES.length)]); }
+    if (now > bot.nextEmote) { bot.nextEmote = now + 12000 + Math.random() * 10000; setEmote(bot, Object.keys(EMOTES)[Math.floor(Math.random() * 6)]); }
+    if (now > bot.nextVoice) { bot.nextVoice = now + 10000 + Math.random() * 10000; bot.speakUntil = now + 2500; }
+    bot.mesh.userData.ring.visible = now < bot.speakUntil && dist(me, bot) < VOICE_RANGE && !state.muted.has(bot.id) && !state.blocked.has(bot.id);
+    p.y = terrainHeight(p.x, p.z);
+  };
+
+  const project = new THREE.Vector3();
+  const updateLabels = (now) => {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    entities.forEach((e) => {
+      const d = dist(me, e); const show = e === me || (e.kind === "npc" ? d < 55 : d < 40);
+      e.tag.style.display = show ? "" : "none"; if (!show) { return; }
+      project.copy(e.mesh.position); project.y += 2.4; project.project(camera);
+      const x = (project.x * 0.5 + 0.5) * w, y = (-project.y * 0.5 + 0.5) * h;
+      e.tag.style.transform = "translate(" + (x - e.tag.offsetWidth / 2).toFixed(1) + "px," + (y - e.tag.offsetHeight).toFixed(1) + "px)"; e.tag.style.visibility = project.z > 1 ? "hidden" : "visible";
+      if (e.bubUntil && now > e.bubUntil) { e.tag.querySelector(".bub").hidden = true; e.bubUntil = 0; } if (e.emoUntil && now > e.emoUntil) { e.tag.querySelector(".emo").hidden = true; e.emoUntil = 0; }
+    });
+  };
+
+  const mini = $("#mini"); const mg = mini.getContext("2d"); const MS = mini.width / 200;
+  const drawMini = (now) => {
+    const X = (x) => (x + 100) * MS, Z = (z) => (z + 100) * MS; mg.clearRect(0, 0, mini.width, mini.height);
+    mg.save(); mg.beginPath(); mg.arc(mini.width / 2, mini.height / 2, mini.width / 2, 0, Math.PI * 2); mg.clip();
+    mg.fillStyle = "#6aa86b"; mg.fillRect(0, 0, mini.width, mini.height); mg.fillStyle = "#3a8fc2"; mg.fillRect(0, 0, X(-78), mini.height); mg.fillStyle = "#dcc58f"; mg.fillRect(X(-78), 0, X(-62) - X(-78), mini.height);
+    mg.fillStyle = "#8d8a82"; mg.beginPath(); mg.arc(X(HILL.x), Z(HILL.z), 14 * MS, 0, Math.PI * 2); mg.fill();
+    mg.strokeStyle = "#3b4046"; mg.lineWidth = 5 * MS; mg.beginPath(); mg.arc(X(0), Z(0), 32.5 * MS, 0, Math.PI * 2); mg.stroke();
+    PATH.forEach((d) => { if (d.b) { mg.lineWidth = 3 * MS; mg.beginPath(); mg.moveTo(X(d.b.x * 0.55), Z(d.b.z * 0.55)); mg.lineTo(X(d.b.x), Z(d.b.z)); mg.stroke(); } });
+    mg.fillStyle = "#79b867"; mg.beginPath(); mg.arc(X(0), Z(0), 27 * MS, 0, Math.PI * 2); mg.fill();
+    const goal = nextGoal();
+    PATH.forEach((d, i) => { const open = isOpen(i); const [x, z] = d.pos; mg.fillStyle = isComplete(d) ? "#2fbf71" : open ? "#f2c14e" : "#7b8087"; mg.strokeStyle = "#fff"; mg.lineWidth = 2; mg.beginPath(); mg.arc(X(x), Z(z), (i === goal ? 6 + Math.sin(now / 200) * 1.5 : 4.5) * MS * 0.9, 0, Math.PI * 2); mg.fill(); mg.stroke(); });
+    mg.fillStyle = "#fff"; bots.forEach((b) => { mg.beginPath(); mg.arc(X(b.mesh.position.x), Z(b.mesh.position.z), 1.6 * MS, 0, Math.PI * 2); mg.fill(); });
+    mg.translate(X(me.mesh.position.x), Z(me.mesh.position.z)); mg.rotate(Math.PI - me.ry); mg.fillStyle = "#e23d3d"; mg.strokeStyle = "#fff"; mg.lineWidth = 2; mg.beginPath(); mg.moveTo(0, -7 * MS); mg.lineTo(5 * MS, 6 * MS); mg.lineTo(-5 * MS, 6 * MS); mg.closePath(); mg.fill(); mg.stroke();
+    mg.restore();
+  };
+
+  let last = performance.now(); let tick = 0; let peopleAt = 0; let tagAt = 0;
+  const frame = (now) => {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now; tick += 1; const t = now / 1000;
+    clouds.forEach((c) => { c.position.x += dt * 1.2; if (c.position.x > 190) { c.position.x = -190; } });
+    if (state.profile && me) {
+      let moving = 0;
+      if (!dialogOpen) {
+        const fx = (keys.has("right") ? 1 : 0) - (keys.has("left") ? 1 : 0), fy = (keys.has("up") ? 1 : 0) - (keys.has("down") ? 1 : 0); const len = Math.hypot(fx, fy);
+        if (len) {
+          const cs = Math.cos(yaw), sn = Math.sin(yaw); const wx = (cs * fx - sn * fy) / len, wz = (-sn * fx - cs * fy) / len; const speed = keys.has("run") ? RUN : WALK; const p = me.mesh.position;
+          p.x += wx * speed * dt; p.z += wz * speed * dt; resolveCollisions(p); p.x = Math.max(SEA_X, Math.min(WORLD, p.x)); p.z = Math.max(-WORLD, Math.min(WORLD, p.z));
+          me.ry = angleLerp(me.ry, Math.atan2(wx, wz), 0.25); me.mesh.rotation.y = me.ry; moving = speed;
+        }
+      }
+      me.mesh.position.y = terrainHeight(me.mesh.position.x, me.mesh.position.z); animateAvatar(me.mesh, moving, t);
+      me.mesh.userData.ring.visible = state.talking;
+      bots.forEach((b) => { botStep(b, now, dt); animateAvatar(b.mesh, b.speed, t + b.mesh.position.x); });
+
+      let best = null, bestD = INTERACT_R;
+      npcs.forEach((n) => { const d = dist(me, n); if (d < bestD && n.index !== undefined) { best = n; bestD = d; } if (d < 14 && !dialogOpen) { n.ry = angleLerp(n.ry, Math.atan2(me.mesh.position.x - n.mesh.position.x, me.mesh.position.z - n.mesh.position.z), 0.08); n.mesh.rotation.y = n.ry; } });
+      if (!dialogOpen) { nearNpc = best; }
+      const hint = $("#hudHint"), act = $("#actBtn");
+      if (!dialogOpen && best) { const open = isOpen(best.index); hint.hidden = false; hint.textContent = open ? "E · Nói chuyện với " + best.name + " (" + best.dest.vi + ")" : "Đóng cửa. Hoàn thành " + PATH[best.index - 1].vi + " để mở."; act.hidden = !open; } else { hint.hidden = true; act.hidden = true; }
+
+      barrierGroups.forEach((g, i) => { if (g) { g.visible = !isOpen(i); } });
+      const goal = nextGoal(); if (goal >= 0) { const [gx, gz] = PATH[goal].pos; beacon.visible = true; beacon.position.set(gx, terrainHeight(gx, gz) + 30, gz); beacon.material.opacity = 0.28 + Math.sin(t * 3) * 0.08; } else { beacon.visible = false; }
+      if (now - tagAt > 400) { tagAt = now; npcs.forEach((n) => { const open = isOpen(n.index); const nm = n.tag.querySelector(".nm"); nm.textContent = (open ? (isComplete(n.dest) ? "✔ " : "💬 ") : "🔒 ") + n.name + " · " + n.dest.vi; n.tag.classList.toggle("lock", !open); }); const g = goal >= 0 ? PATH[goal] : null; $("#hudGoal").textContent = g ? "Mục tiêu: " + g.vi + " · " + Math.round(Math.hypot(g.pos[0] - me.mesh.position.x, g.pos[1] - me.mesh.position.z)) + "m" : "Đã hoàn thành các nhiệm vụ có nội dung"; $("#hudWhere").textContent = Math.hypot(me.mesh.position.x, me.mesh.position.z) < 28 ? "Công viên" : me.mesh.position.x < -62 ? "Bãi biển" : me.mesh.position.y > 3 ? "Đồi" : "Phố"; }
+      if (now - peopleAt > 500) { peopleAt = now; renderPeople(); updatePtt(); }
+      updateCamera(dt);
+      if (tick % 2 === 0) { drawMini(now); }
+    }
+    updateLabels(now); renderer.render(scene, camera); requestAnimationFrame(frame);
+  };
+
+  /* ---------- Chat gần ---------- */
+  const addChat = (id, name, text) => { state.chat.push({ id, name, text, t: Date.now() }); if (state.chat.length > 80) { state.chat.shift(); } renderChat(); };
+  const botSay = (bot, text) => { setBubble(bot, text); if (dist(me, bot) <= NEAR_RANGE) { addChat(bot.id, bot.name, text); } };
+  const renderChat = () => {
+    const rows = state.chat.filter((m) => !state.blocked.has(m.id));
+    $("#chatLog").innerHTML = rows.length ? rows.map((m) => '<div class="msg"><b style="color:' + (m.id === "me" ? "var(--accent)" : "inherit") + '">' + escapeHtml(m.name) + "</b><time>" + clock(m.t) + "</time><div>" + escapeHtml(m.text) + "</div></div>").join("") : '<p class="muted small">Chat chỉ hiện với người trong vòng ' + NEAR_RANGE + "m. Đi lại gần các bot trong công viên và gõ vài câu tiếng Anh.</p>";
+    const pane = $("#pane-chat"); pane.scrollTop = pane.scrollHeight;
+  };
+  $("#chatForm").addEventListener("submit", (event) => {
+    event.preventDefault(); const input = $("#chatInput"); const clean = input.value.replace(/\s+/g, " ").trim(); if (!clean || !state.profile) { return; }
+    const now = performance.now(); if (now - state.lastChatAt < CHAT_GAP_MS) { toast("Gõ chậm lại một chút."); return; } state.lastChatAt = now; input.value = "";
+    const text = clean.slice(0, 140).replace(BLOCK_RE, (m) => "*".repeat(m.length)); setBubble(me, text); addChat("me", state.profile.name, text);
+    const near = bots.filter((b) => dist(me, b) < NEAR_RANGE && !state.blocked.has(b.id));
+    if (near.length && Math.random() < 0.8) { const bot = near[Math.floor(Math.random() * near.length)]; setTimeout(() => botSay(bot, BOT_REPLIES[Math.floor(Math.random() * BOT_REPLIES.length)]), 1200 + Math.random() * 1500); }
+  });
+  Object.keys(EMOTES).forEach((key) => { const b = document.createElement("button"); b.type = "button"; b.textContent = EMOTES[key]; b.setAttribute("aria-label", "Biểu cảm " + key); b.addEventListener("click", () => { if (state.profile) { setEmote(me, key); } }); $("#emotes").appendChild(b); });
+
+  /* ---------- Người chơi, chặn, báo cáo ---------- */
+  let reportingId = null;
+  const renderPeople = () => {
+    const pane = $("#pane-people"); if (pane.hidden) { return; } if (document.activeElement && document.activeElement.tagName === "SELECT" && pane.contains(document.activeElement)) { return; }
+    const rows = bots.map((b) => {
+      const d = dist(me, b); const blocked = state.blocked.has(b.id), muted = state.muted.has(b.id); const vol = blocked || muted ? 0 : Math.max(0, 1 - d / VOICE_RANGE);
+      const reportBox = reportingId === b.id ? '<div class="row" style="width:100%"><select data-reason aria-label="Lý do báo cáo">' + Object.entries(REPORT_REASONS).map(([k, v]) => '<option value="' + k + '">' + v + "</option>").join("") + '</select><button type="button" data-send-report="' + b.id + '" class="primary">Gửi</button><button type="button" data-cancel-report>Hủy</button></div>' : "";
+      return '<div class="row"><span class="dot" style="background:' + b.color + '"></span><div class="grow"><b>' + escapeHtml(b.name) + '</b> <span class="muted small">' + d.toFixed(0) + "m" + (d < NEAR_RANGE ? " · gần" : "") + '</span><div class="vol" title="Âm lượng theo khoảng cách"><i style="width:' + (vol * 100).toFixed(0) + '%"></i></div></div><button type="button" data-mute="' + b.id + '">' + (muted ? "Bật tiếng" : "Tắt tiếng") + '</button><button type="button" data-block="' + b.id + '">' + (blocked ? "Bỏ chặn" : "Chặn") + '</button><button type="button" class="danger" data-report="' + b.id + '">Báo cáo</button>' + reportBox + "</div>";
+    }).join("");
+    const reports = state.reports.length ? '<h3 style="margin-top:14px">Báo cáo đã gửi (chỉ ghi trên máy bạn)</h3>' + state.reports.map((r) => '<div class="small muted">' + clock(r.t) + " · " + escapeHtml(r.name) + " · " + escapeHtml(REPORT_REASONS[r.reason]) + " · kèm " + r.context + " tin nhắn gần nhất</div>").join("") : "";
+    pane.innerHTML = '<p class="muted small" style="margin:0 0 6px">Tắt tiếng chỉ chặn voice. Chặn ẩn cả chat, bong bóng và voice của người đó.</p>' + rows + reports;
+  };
+  $("#pane-people").addEventListener("click", (event) => {
+    const t = event.target.closest("button"); if (!t) { return; } const toggle = (s, id) => { if (s.has(id)) { s.delete(id); } else { s.add(id); } };
+    if (t.dataset.mute) { toggle(state.muted, t.dataset.mute); } if (t.dataset.block) { toggle(state.blocked, t.dataset.block); save(); renderChat(); } if (t.dataset.report) { reportingId = t.dataset.report; } if (t.dataset.cancelReport !== undefined) { reportingId = null; }
+    if (t.dataset.sendReport) { const reason = $("#pane-people [data-reason]").value; const bot = bots.find((b) => b.id === t.dataset.sendReport); const context = state.chat.filter((m) => m.id === bot.id && Date.now() - m.t < 60000).length; state.reports.push({ t: Date.now(), name: bot.name, reason, context }); reportingId = null; toast("Đã ghi báo cáo. Bản thật sẽ gửi cho quản trị viên."); }
+    renderPeople();
+  });
+
+  /* ---------- Voice mô phỏng ---------- */
+  const audible = (b) => dist(me, b) < VOICE_RANGE && !state.muted.has(b.id) && !state.blocked.has(b.id);
+  const updatePtt = () => {
+    const info = $("#pttInfo"); const near = bots.filter(audible);
+    info.textContent = state.talking ? (near.length ? "Đang nói · " + near.map((b) => b.name).join(", ") + " nghe thấy" : "Đang nói · không ai trong tầm nghe") : "Voice: tắt · " + near.length + " người trong tầm nghe";
+  };
+  const setTalking = (on) => { state.talking = on && !!state.profile && !dialogOpen; $("#pttBtn").textContent = state.talking ? "🎙 Đang nói..." : "🎙 Giữ để nói"; updatePtt(); };
+  const ptt = $("#pttBtn"); ptt.addEventListener("pointerdown", () => setTalking(true)); ["pointerup", "pointerleave", "pointercancel"].forEach((n) => ptt.addEventListener(n, () => setTalking(false)));
+
+  /* ---------- Nhật ký lộ trình (chỉ để xem) ---------- */
+  const starsText = (n) => (n ? "★".repeat(n) + "☆".repeat(3 - n) : "");
+  const renderHud = () => { $("#hudXp").textContent = state.progress.xp + " XP"; $("#hudLevel").textContent = "Mở " + progressOpen().filter(Boolean).length + "/" + PATH.length; };
+  const renderQuest = () => {
+    renderHud(); const pane = $("#pane-quest"); if (pane.hidden) { return; }
+    pane.innerHTML = '<p class="muted small" style="margin:0 0 6px">Đi bộ tới NPC để làm nhiệm vụ. Ô vàng trên bản đồ nhỏ và cột sáng vàng là mục tiêu hiện tại.</p>' + PATH.map((d, i) => {
+      const open = isOpen(i), done = isComplete(d); const dd = me ? Math.round(Math.hypot(d.pos[0] - me.mesh.position.x, d.pos[1] - me.mesh.position.z)) : 0;
+      const m = d.missions.map((id) => '<div class="small" style="padding-left:18px">' + escapeHtml(MISSIONS[id].title) + ' · <span aria-label="' + (state.progress.stars[id] || 0) + ' sao">' + (starsText(state.progress.stars[id] || 0) || "chưa làm") + "</span></div>").join("");
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>' + (i + 1) + ". " + escapeHtml(d.vi) + '</b><span class="pill ' + (done ? "ok" : open ? "warn" : "lock") + '">' + (done ? "Đã xong" : open ? "Đã mở" : "Đóng cửa") + '</span><span class="muted small">' + d.cefr + " · " + d.phase + " · " + dd + 'm</span></div><div class="small muted">' + escapeHtml(d.npc) + " (" + escapeHtml(d.role) + ") · " + escapeHtml(d.what) + "</div>" + m + (d.missions.length ? "" : '<div class="small muted" style="padding-left:18px">Chưa có nội dung, làm ở giai đoạn ' + d.phase + ".</div>") + "</div>";
+    }).join("");
+  };
+  const setTab = (name) => { ["chat", "people", "quest"].forEach((n) => { $("#pane-" + n).hidden = n !== name; $("#tab-" + n).setAttribute("aria-selected", String(n === name)); }); if (name === "people") { renderPeople(); } if (name === "quest") { renderQuest(); } };
+  document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
+
+  /* ---------- Hội thoại nhiệm vụ ---------- */
+  const dialog = $("#dialog");
+  const openDialog = () => {
+    if (!nearNpc || dialogOpen || !isOpen(nearNpc.index)) { return; }
+    const dest = nearNpc.dest; const pending = dest.missions.find((id) => !state.progress.completed.includes(id)); const missionId = pending || dest.missions[0];
+    state.session = { dest, npc: nearNpc, mission: missionId ? MISSIONS[missionId] : null, turn: 0, attempts: 0, failed: 0, turnStars: [], feedback: null, done: null, showTranslation: false, micOff: false, variant: 0 };
+    dialogOpen = true; setTalking(false); $("#hudHint").hidden = true; $("#actBtn").hidden = true; dialog.hidden = false; renderDialog(); if (state.session.mission) { speakTurn(); }
+  };
+  const closeDialog = () => { dialogOpen = false; dialog.hidden = true; state.session = null; renderQuest(); };
+  const currentTurn = () => state.session.mission.turns[state.session.turn];
+  const npcLine = () => { const t = currentTurn(); return t.npcLines[state.session.variant % t.npcLines.length]; };
+  const speakTurn = () => { const line = npcLine(); setBubble(state.session.npc, line); speak(line); };
+
+  const submitAnswer = (text, source) => {
+    const s = state.session; const turn = currentTurn(); s.attempts += 1; const result = matchTurn(turn, text, s.mission.cefr);
+    if (result.passed) {
+      s.turnStars.push(source === "typed" ? 1 : s.attempts <= 1 ? 3 : 2); s.feedback = { passed: true, score: result.score, text: "Đạt (" + Math.round(result.score * 100) + "%)" }; setBubble(me, text);
+      if (s.turn + 1 >= s.mission.turns.length) { finishMission(); } else { s.turn += 1; s.attempts = 0; s.failed = 0; s.variant = Math.floor(Math.random() * 2); setTimeout(() => { if (state.session === s) { speakTurn(); } }, 500); }
+    } else { s.failed += 1; s.feedback = { passed: false, score: result.score, text: "Chưa đạt (" + Math.round(result.score * 100) + "%). Thử nói lại." }; }
+    renderDialog();
+  };
+  const finishMission = () => {
+    const s = state.session; const before = progressOpen(); const avg = s.turnStars.reduce((a, b) => a + b, 0) / s.turnStars.length; const stars = Math.max(1, Math.round(avg));
+    const xp = Math.ceil((s.mission.rewardXp * stars) / 3); const first = !state.progress.completed.includes(s.mission.id);
+    if (first) { state.progress.completed.push(s.mission.id); state.progress.xp += xp; } state.progress.stars[s.mission.id] = Math.max(state.progress.stars[s.mission.id] || 0, stars);
+    const after = progressOpen(); const unlocked = PATH.filter((d, i) => after[i] && !before[i]).map((d) => d.vi); s.done = { stars, xp: first ? xp : 0, first, unlocked }; save(); renderHud();
+    if (unlocked.length) { toast("🔓 Đã mở: " + unlocked.join(", ")); }
+  };
+  const renderDialog = () => {
+    const s = state.session; if (!s) { return; }
+    const head = '<div class="head"><h3 style="margin:0">' + escapeHtml(s.npc.name) + ' <span class="muted small">· ' + escapeHtml(s.dest.vi) + '</span></h3><button type="button" id="dClose" aria-label="Đóng hội thoại">✕</button></div>';
+    if (!s.mission) { dialog.innerHTML = head + '<div class="npcline">Hello! Come back soon. We are still preparing this place.</div><p class="small muted" style="margin:0">Nhiệm vụ cho "' + escapeHtml(s.dest.vi) + '" chưa có nội dung, sẽ làm ở giai đoạn ' + s.dest.phase + ".</p>"; return; }
+    if (s.done) { dialog.innerHTML = head + '<div class="result pass"><b>' + escapeHtml(s.mission.title) + " · hoàn thành! " + starsText(s.done.stars) + "</b><div>" + (s.done.first ? "+" + s.done.xp + " XP" : "Chơi lại: không cộng thêm XP, sao chỉ tăng nếu cao hơn.") + "</div>" + (s.done.unlocked.length ? "<div><b>Mở khóa:</b> " + s.done.unlocked.map(escapeHtml).join(", ") + ". Rào chắn đã được gỡ.</div>" : "") + '</div><div class="bar"><button type="button" class="primary" id="dClose2">Tiếp tục khám phá</button></div>'; return; }
+    const turn = currentTurn(); const canType = s.micOff || s.failed >= TYPED_AFTER;
+    const dots = s.mission.turns.map((_, i) => '<span class="dot" style="background:' + (i < s.turn ? "var(--accent)" : i === s.turn ? "var(--warn)" : "var(--line)") + '"></span>').join("");
+    const fb = s.feedback ? '<div class="result ' + (s.feedback.passed ? "pass" : "fail") + '">' + escapeHtml(s.feedback.text) + '<div class="meter"><i style="width:' + Math.round(s.feedback.score * 100) + '%"></i></div></div>' : "";
+    const hint = s.failed >= HINT_AFTER ? '<div class="result fail"><b>Gợi ý:</b> ' + escapeHtml(turn.hint) + "</div>" : "";
+    dialog.innerHTML = head + '<div class="muted small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' + escapeHtml(s.mission.title) + " · lượt " + (s.turn + 1) + "/" + s.mission.turns.length + " · " + s.mission.cefr + " · cần đạt " + Math.round(THRESHOLDS[s.mission.cefr] * 100) + '% <span style="display:flex;gap:4px">' + dots + '</span></div><div class="npcline">' + escapeHtml(npcLine()) + '</div><div class="bar" style="margin-top:0"><button type="button" id="dReplay">🔊 Nghe lại</button><button type="button" id="dVi">' + (s.showTranslation ? "Ẩn" : "Xem") + " dịch</button></div>" + (s.showTranslation ? '<div class="small muted" style="margin-top:6px">' + escapeHtml(turn.translation) + "</div>" : "") + fb + hint +
+      '<form id="answerForm" style="margin-top:8px" autocomplete="off"><label class="small muted" for="answer">' + (canType ? "Gõ câu trả lời (chỉ được 1 sao)" : "🎤 Nói câu trả lời (mô phỏng: gõ đúng câu bạn sẽ nói)") + '</label><div class="bar" style="margin-top:4px"><input type="text" id="answer" style="flex:1" placeholder="Trả lời bằng tiếng Anh"><button type="submit" class="primary">' + (canType ? "Gửi" : "Nói") + '</button></div></form><label class="small" style="display:flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" id="micOff"' + (s.micOff ? " checked" : "") + '> Mic không dùng được (cho phép gõ ngay)</label><p class="small muted" style="margin:4px 0 0">Sau ' + HINT_AFTER + " lần sai: hiện gợi ý. Sau " + TYPED_AFTER + " lần sai: được gõ. Nói đạt lần đầu 3 sao, lần sau 2 sao, gõ 1 sao.</p>";
+    const input = $("#answer"); if (input) { input.focus({ preventScroll: true }); }
+  };
+  dialog.addEventListener("click", (event) => {
+    const id = event.target.id; const s = state.session; if (!s) { return; }
+    if (id === "dClose" || id === "dClose2") { closeDialog(); } if (id === "dReplay") { speak(npcLine()); } if (id === "dVi") { s.showTranslation = !s.showTranslation; renderDialog(); }
+  });
+  dialog.addEventListener("change", (event) => { if (event.target.id === "micOff") { state.session.micOff = event.target.checked; renderDialog(); } });
+  dialog.addEventListener("submit", (event) => { event.preventDefault(); const s = state.session; const text = $("#answer").value.trim(); if (!text || !s || s.done) { return; } submitAnswer(text, s.micOff || s.failed >= TYPED_AFTER ? "typed" : "voice"); });
+  $("#actBtn").addEventListener("click", openDialog);
+
+  /* ---------- Cổng 18+ ---------- */
+  const gate = $("#gate"), gError = $("#gError"); let chosenColor = COLORS[0];
+  COLORS.forEach((c, i) => { const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.style.background = c; b.setAttribute("aria-label", "Màu " + (i + 1)); b.setAttribute("aria-pressed", String(i === 0)); b.addEventListener("click", () => { chosenColor = c; document.querySelectorAll(".swatch").forEach((s) => s.setAttribute("aria-pressed", String(s === b))); }); $("#gSwatches").appendChild(b); });
+  const ageLocked = () => { try { return sessionStorage.getItem("park-age-blocked") === "1"; } catch (error) { return false; } };
+  const enter = () => {
+    gate.hidden = true; $("#dpad").classList.add("on"); buildPeople(); renderChat(); renderQuest(); renderHud();
+    toast("Chào " + state.profile.name + "! Đi bộ về phía Sam (phía bắc công viên) và nhấn E để bắt đầu.");
+  };
+  $("#gateForm").addEventListener("submit", (event) => {
+    event.preventDefault(); gError.hidden = true;
+    if (ageLocked()) { gError.textContent = "Bạn đã khai dưới 18 tuổi. Prototype chặn thử lại trong phiên này."; gError.hidden = false; return; }
+    const year = Number($("#gYear").value); if (!Number.isInteger(year) || year < 1900 || year > new Date().getFullYear()) { gError.textContent = "Nhập năm sinh hợp lệ."; gError.hidden = false; return; }
+    if (new Date().getFullYear() - year < MIN_AGE) { try { sessionStorage.setItem("park-age-blocked", "1"); } catch (error) { /* bỏ qua */ } gError.textContent = "Park English chỉ dành cho người từ 18 tuổi trở lên."; gError.hidden = false; return; }
+    const raw = $("#gName").value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 20); state.profile = { name: raw || "Guest", birthYear: year, color: chosenColor }; save(); enter();
+  });
+  $("#resetBtn").addEventListener("click", () => { try { localStorage.removeItem(STORAGE_KEY); sessionStorage.removeItem("park-age-blocked"); } catch (error) { /* bỏ qua */ } location.reload(); });
+  $("#exploreChk").addEventListener("change", (event) => { state.explore = event.target.checked; renderQuest(); });
+
+  /* ---------- Phím, chuột, chạm ---------- */
+  const typing = (el) => el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT");
+  window.addEventListener("keydown", (event) => {
+    if (!state.profile) { return; }
+    if (event.code === "Escape" && dialogOpen) { closeDialog(); return; }
+    if (typing(event.target)) { return; }
+    if (KEY_MAP[event.code]) { keys.add(KEY_MAP[event.code]); event.preventDefault(); }
+    if (event.code === "ShiftLeft" || event.code === "ShiftRight") { keys.add("run"); }
+    if (event.code === "KeyV" && !event.repeat) { setTalking(true); }
+    if (event.code === "KeyE" && !event.repeat) { openDialog(); }
+  });
+  window.addEventListener("keyup", (event) => { if (KEY_MAP[event.code]) { keys.delete(KEY_MAP[event.code]); } if (event.code === "ShiftLeft" || event.code === "ShiftRight") { keys.delete("run"); } if (event.code === "KeyV") { setTalking(false); } });
+  window.addEventListener("blur", () => { keys.clear(); setTalking(false); });
+  document.querySelectorAll("#dpad button").forEach((b) => { b.addEventListener("pointerdown", (e) => { e.preventDefault(); keys.add(b.dataset.key); }); ["pointerup", "pointerleave", "pointercancel"].forEach((n) => b.addEventListener(n, () => keys.delete(b.dataset.key))); });
+  let dragX = null;
+  renderer.domElement.addEventListener("pointerdown", (e) => { dragX = e.clientX; renderer.domElement.setPointerCapture(e.pointerId); renderer.domElement.style.cursor = "grabbing"; });
+  renderer.domElement.addEventListener("pointermove", (e) => { if (dragX !== null && !dialogOpen) { yaw -= (e.clientX - dragX) * 0.006; dragX = e.clientX; } });
+  ["pointerup", "pointercancel"].forEach((n) => renderer.domElement.addEventListener(n, () => { dragX = null; renderer.domElement.style.cursor = "grab"; }));
+
+  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) { return; } renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
+  new ResizeObserver(resize).observe(stage); resize();
+
+  load(); renderHud(); renderChat();
+  if (state.profile) { $("#gName").value = state.profile.name; $("#gYear").value = state.profile.birthYear; }
+  requestAnimationFrame(frame);
+  window.__park = { state, openDialog, get me() { return me; }, npcs, PATH };
+})();
+</script>

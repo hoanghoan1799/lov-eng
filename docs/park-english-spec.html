@@ -1,0 +1,419 @@
+<title>Park English Spec</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: một cột đọc 880px, mục lục dính đầu trang, bảng cuộn ngang trong khung riêng. */
+:root {
+  --bg: #F5F8F6;
+  --surface: #FFFFFF;
+  --fg: #13211B;
+  --muted: #55655D;
+  --line: #D8E1DC;
+  --accent: #1C7C4D;
+  --accent-soft: #DDF0E4;
+  --sky: #2563A8;
+  --sky-soft: #DCE9F7;
+  --warn: #A9650B;
+  --warn-soft: #F8E8CC;
+  --bad: #B03A3A;
+  --bad-soft: #F7DADA;
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1612; --surface: #15211B; --fg: #E4EEE8; --muted: #9BB0A5; --line: #2A3A32;
+    --accent: #5FCB90; --accent-soft: #17382A; --sky: #7DB2EC; --sky-soft: #172E48;
+    --warn: #E5A94F; --warn-soft: #3D2D12; --bad: #EE8C8C; --bad-soft: #432121;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1612; --surface: #15211B; --fg: #E4EEE8; --muted: #9BB0A5; --line: #2A3A32;
+  --accent: #5FCB90; --accent-soft: #17382A; --sky: #7DB2EC; --sky-soft: #172E48;
+  --warn: #E5A94F; --warn-soft: #3D2D12; --bad: #EE8C8C; --bad-soft: #432121;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-block: 0 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 880px; margin: 0 auto; }
+header.top { padding-block: 40px 24px; border-bottom: 1px solid var(--line); }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+h1 { font-family: var(--font-display); font-size: clamp(30px, 6vw, 44px); line-height: 1.1; margin: 8px 0 12px; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 26px; line-height: 1.2; margin: 0 0 8px; text-wrap: balance; }
+h3 { font-family: var(--font-display); font-size: 18px; margin: 24px 0 6px; }
+p { margin: 0 0 12px; max-width: 70ch; }
+.lead { font-size: 18px; color: var(--muted); max-width: 66ch; }
+nav.toc { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 5; border-bottom: 1px solid var(--line); }
+nav.toc .wrap { display: flex; gap: 6px 16px; flex-wrap: wrap; padding-block: 10px; font-size: 14px; }
+nav.toc a { color: var(--muted); text-decoration: none; padding: 2px 0; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); text-decoration: underline; outline: none; }
+section { padding-block: 40px 8px; scroll-margin-top: 56px; }
+.verdict { display: grid; gap: 12px; margin-top: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.verdict > div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.verdict b { display: block; font-family: var(--font-display); margin-bottom: 4px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); margin: 12px 0 20px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); background: var(--bg); position: sticky; top: 0; }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; color: var(--muted); width: 36px; }
+tr.hub td { background: var(--accent-soft); }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.ok { background: var(--accent-soft); color: var(--accent); }
+.fix { background: var(--warn-soft); color: var(--warn); }
+.bad { background: var(--bad-soft); color: var(--bad); }
+.info { background: var(--sky-soft); color: var(--sky); }
+.grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; min-width: 0; }
+.box h3 { margin-top: 4px; }
+ul, ol { padding-left: 20px; margin: 6px 0 12px; }
+li { margin-bottom: 4px; }
+code { font-family: var(--font-mono); font-size: 13px; background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.mermaid { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; }
+.timeline { display: grid; gap: 10px; margin: 12px 0; }
+.timeline > div { display: grid; grid-template-columns: 96px 1fr; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.timeline .when { font-family: var(--font-display); font-weight: 600; color: var(--accent); }
+.timeline > div > div { min-width: 0; }
+@media (max-width: 520px) { .timeline > div { grid-template-columns: 1fr; gap: 2px; } }
+footer { margin-top: 48px; color: var(--muted); font-size: 14px; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Park English (tên tạm) · Bản đặc tả v0.4</div>
+    <h1>Lộ trình 10 điểm đến, bắt đầu từ công viên</h1>
+    <p class="lead">Bản v0.4 đổi hình thức chơi: mọi người bắt đầu ở công viên, hoàn thành nhiệm vụ để mở quán cà phê, rồi nhà hàng, rồi các điểm đến tiếp theo cho đủ khoảng 10 mục tiêu. Công viên là nơi mọi người tụ tập. Người chơi từ 18 tuổi trở lên. Mình đã tự đề xuất danh sách điểm đến, bạn có thể đổi.</p>
+    <div class="verdict">
+      <div><b>Tốt hơn cho một người làm</b>Điểm đến là cảnh nhỏ, chơi riêng hoặc với vài bạn. Chỉ công viên cần phòng đông người, nên bài toán "phòng vắng" gần như biến mất.</div>
+      <div><b>Có thêm rủi ro</b>Lộ trình tuyến tính dễ làm người trình độ cao chán và người nói chưa tốt bị kẹt. Cần bài xếp lớp, thử thách bỏ qua và lối thoát khi nói.</div>
+      <div><b>Ước tính thật</b>MVP (công viên, quán cà phê, nhà hàng) khoảng 12 đến 16 tuần. Đủ 10 điểm đến khoảng 24 đến 30 tuần làm một mình, vì nội dung và đồ họa là phần tốn công nhất.</div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Mục lục"><div class="wrap">
+  <a href="#phan-tich">1. Phân tích 15 câu</a>
+  <a href="#phan-bien">2. Phản biện chính</a>
+  <a href="#spec">3. Product spec</a>
+  <a href="#mvp">4. MVP và lộ trình</a>
+  <a href="#kien-truc">5. Kiến trúc</a>
+  <a href="#rui-ro">6. Rủi ro</a>
+  <a href="#review">7. Giả định cần duyệt</a>
+</div></nav>
+
+<main class="wrap">
+
+<section id="phan-tich">
+  <h2>1. Phân tích từng câu trả lời</h2>
+  <p>Mình chấm mỗi lựa chọn là <span class="pill ok">Giữ</span> (hợp lý), <span class="pill fix">Sửa</span> (đúng hướng nhưng cần điều chỉnh), <span class="pill bad">Mâu thuẫn</span> (xung đột với câu khác) hoặc <span class="pill info">Thiếu</span> (chưa đủ thông tin). Các câu đổi từ vòng trước được ghi rõ.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>Bạn chọn</th><th>Đánh giá</th><th>Phản biện và điều chỉnh</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>Mọi lứa tuổi. <b>Đổi: từ 18 tuổi trở lên.</b></td><td><span class="pill ok">Giữ</span></td><td>Bỏ được phần lớn rủi ro trẻ em. Không cần chia phòng theo tuổi. Nội dung chia theo trình độ.</td></tr>
+      <tr><td class="num">2</td><td>Kết hợp tất cả mục tiêu học</td><td><span class="pill fix">Sửa</span></td><td>Chọn một trụ cột: <b>nói trong ngữ cảnh</b>. Từ vựng và nghe nằm bên trong nhiệm vụ nói. Ngữ pháp để sau.</td></tr>
+      <tr><td class="num">3</td><td>Mô hình tham chiếu: chưa trả lời</td><td><span class="pill info">Thiếu</span></td><td>Giả định: Duolingo gặp Gather.town. Lộ trình mở khóa giống Duolingo, công viên là không gian xã hội giống Gather.</td></tr>
+      <tr><td class="num">4</td><td>Text và voice</td><td><span class="pill ok">Giữ</span></td><td>Voice chủ yếu diễn ra ở công viên, cho người đã đăng nhập, mặc định nhấn để nói.</td></tr>
+      <tr><td class="num">5</td><td>10–20 người mỗi phòng</td><td><span class="pill ok">Giữ</span></td><td>Con số này áp dụng cho công viên. Điểm đến là phòng nhỏ 1 đến 4 người, nhẹ hơn nhiều.</td></tr>
+      <tr><td class="num">6</td><td>Khu vực riêng, di chuyển giữa chúng. <b>Đổi: lộ trình tuyến tính, công viên là trung tâm.</b></td><td><span class="pill ok">Giữ</span></td><td>Mỗi điểm đến là một cảnh nhỏ riêng, mở khóa tuần tự. Không cần bản đồ thành phố liền mạch.</td></tr>
+      <tr><td class="num">7</td><td>Bắt buộc nói tiếng Anh</td><td><span class="pill bad">Mâu thuẫn</span></td><td>Xung đột với câu 9. Cần nhận dạng giọng dù chưa chấm phát âm, và lối thoát khi mic hỏng hoặc quá ồn (xem 2B).</td></tr>
+      <tr><td class="num">8</td><td>NPC có kịch bản cố định</td><td><span class="pill ok">Giữ</span></td><td>Rẻ, an toàn, kiểm thử được. Âm thanh dựng sẵn khi build. Nhược điểm là lặp lại, nhưng nội dung cho 10 điểm đến sẽ là phần việc lớn (xem 2F).</td></tr>
+      <tr><td class="num">9</td><td>Chưa cần chấm speaking trong MVP</td><td><span class="pill fix">Sửa</span></td><td>Tách <b>nhận dạng</b> (có nói đúng câu mục tiêu không) khỏi <b>chấm phát âm</b>. MVP làm việc đầu.</td></tr>
+      <tr><td class="num">10</td><td>Stylized cartoon 3D</td><td><span class="pill ok">Giữ</span></td><td>Hợp người lớn nếu tỉ lệ nhân vật cân đối, không quá chibi. Điểm đến nhỏ giúp một người làm kịp.</td></tr>
+      <tr><td class="num">11</td><td>Tùy chỉnh nhân vật, animation và biểu cảm</td><td><span class="pill fix">Sửa</span></td><td>Tùy chỉnh theo ô trên một bộ xương chung. MVP có 6 emote. Biểu cảm mặt đổi bằng texture.</td></tr>
+      <tr><td class="num">12</td><td>Thế giới mở, mở rộng dần theo level</td><td><span class="pill ok">Giữ</span></td><td>Lộ trình mở khóa chính là cách "mở rộng dần theo level". Thêm điểm đến mới chỉ là thêm nội dung.</td></tr>
+      <tr><td class="num">13</td><td>Startup, nhiều người dùng</td><td><span class="pill fix">Sửa</span></td><td>Cần đo lường, pháp lý dữ liệu cá nhân, doanh thu. Hai hướng tự nhiên với người lớn: người đi làm tự học (B2C) và công ty mua cho nhân viên (B2B).</td></tr>
+      <tr><td class="num">14</td><td>Một mình, có AI hỗ trợ</td><td><span class="pill fix">Sửa</span></td><td>AI giúp viết code và nháp nội dung. Không thay được kiểm duyệt, pháp lý, kiểm tra trình độ nội dung và đồ họa.</td></tr>
+      <tr><td class="num">15</td><td>MVP cân bằng mọi thành phần</td><td><span class="pill fix">Sửa</span></td><td>Hiểu là lát cắt mỏng của mọi thành phần. MVP trọn vẹn ba điểm đến đầu của lộ trình, mười điểm đến là các giai đoạn sau.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="phan-bien">
+  <h2>2. Sáu phản biện lớn nhất</h2>
+
+  <h3>A. Giới hạn 18+ giảm rủi ro nhưng không xóa nó</h3>
+  <p>Người dưới 18 vẫn có thể khai sai tuổi, và voice giữa người lạ vẫn có quấy rối. Mình hiểu rằng giọng nói và dữ liệu cá nhân của người lớn vẫn thuộc Nghị định 13/2023 của Việt Nam. Đây là hiểu biết của mình, cần luật sư xác nhận trước khi mở công khai.</p>
+  <ul>
+    <li>Cổng 18+ khi vào: khai năm sinh và đồng ý điều khoản. Ai khai dưới 18 bị chặn và không thử lại ngay trên cùng trình duyệt.</li>
+    <li>Khách chỉ được chat chữ. Voice cần đăng nhập để có thể cấm tài khoản vi phạm.</li>
+    <li>Báo cáo, chặn, tắt tiếng cho mọi người. Quản trị viên có công cụ kick và cấm.</li>
+  </ul>
+
+  <h3>B. "Bắt buộc nói" nhưng "không chấm speaking"</h3>
+  <p>Thiết kế đề xuất là <b>cổng nói</b> có bậc thang cho mỗi lượt nói:</p>
+  <ol>
+    <li>Nghe NPC đọc câu mẫu (âm thanh dựng sẵn).</li>
+    <li>Lặp lại thử, không tính điểm.</li>
+    <li>Nói câu mục tiêu. Hệ thống so khớp mờ với các câu được chấp nhận, ngưỡng thấp hơn ở level thấp.</li>
+    <li>Sai 3 lần thì hiện gợi ý chữ. Sai 5 lần thì cho gõ câu trả lời.</li>
+  </ol>
+  <p>Với lộ trình tuyến tính, cổng nói còn có hệ quả khác: nếu nó chặn mở khóa thì người dùng sẽ bị kẹt. Nên mình tách <b>sao</b> khỏi <b>mở khóa</b>: gõ chữ vẫn hoàn thành nhiệm vụ để đi tiếp, nhưng chỉ được 1 sao. Nói đạt trong lần thử đầu được 3 sao. Sao ảnh hưởng phần thưởng, không chặn lộ trình.</p>
+
+  <h3>C. Phạm vi và thời gian</h3>
+  <p>MVP ba điểm đến là 12 đến 16 tuần. Mỗi điểm đến thêm vào là một cảnh 3D nhỏ cộng 4 đến 5 nhiệm vụ, tính khoảng 1 đến 2 tuần. Bảy điểm đến còn lại cộng thêm khoảng 12 đến 14 tuần, nên đủ 10 điểm đến mất 24 đến 30 tuần làm một mình.</p>
+
+  <h3>D. Công viên làm hub giải quyết phòng vắng, nhưng còn một chỗ hở</h3>
+  <p>Vì mọi người đều quay lại công viên, mật độ người tập trung vào một nơi. Điểm đến là phòng riêng nên không cần ghép người. Còn hai vấn đề:</p>
+  <ul>
+    <li><b>Trình độ lệch nhau trong công viên.</b> Người ở bước 2 và người ở bước 9 khó nói chuyện cùng nhau. Ghép phòng công viên theo dải tiến độ (bước 1–3, 4–6, 7–10) và gộp dải lại khi ít người. Bạn bè vẫn mời nhau vào cùng phòng được.</li>
+    <li><b>Không thể bắt buộc làm nhiệm vụ cần người khác.</b> Nếu một nhiệm vụ yêu cầu nói chuyện với người chơi thật mà lúc đó không ai online thì người dùng bị kẹt. Nhiệm vụ xã hội ở công viên chỉ là thưởng thêm, không nằm trong điều kiện mở khóa.</li>
+  </ul>
+
+  <h3>E. Lộ trình tuyến tính có thể làm người học chán hoặc kẹt</h3>
+  <p>Người đã khá tiếng Anh không muốn đi qua quán cà phê mới đến được khách sạn. Người yếu thì muốn làm lại một điểm đến nhiều lần. Đề xuất:</p>
+  <ul>
+    <li>Bài xếp lớp 3 phút khi vào, mở khóa tới tối đa bước 4.</li>
+    <li>Mỗi điểm đến chưa mở có <b>thử thách bỏ qua</b>: một nhiệm vụ cuối khó hơn, qua được thì mở khóa luôn điểm đến đó.</li>
+    <li>Được chơi lại bất kỳ điểm đến đã mở, và công viên luôn mở.</li>
+  </ul>
+
+  <h3>F. Nội dung cho 10 điểm đến là việc lớn nhất, hơn cả code</h3>
+  <p>10 điểm đến, mỗi nơi 4 đến 5 nhiệm vụ, mỗi nhiệm vụ 3 đến 5 lượt nói và nhiều biến thể câu: khoảng 200 lượt hội thoại cùng kịch bản âm thanh. AI giúp viết nháp nhanh, nhưng độ khó theo CEFR phải có người có chuyên môn tiếng Anh soát lại. Nếu bỏ bước này, nhiệm vụ sẽ lệch trình độ và làm hỏng trải nghiệm học.</p>
+</section>
+
+<section id="spec">
+  <h2>3. Product spec</h2>
+  <div class="grid2">
+    <div class="box"><h3>Tầm nhìn</h3><p>Một lộ trình đi qua các tình huống đời thường bằng tiếng Anh, từng nơi một, kết thúc ở những tình huống như đi du lịch hay phỏng vấn xin việc. Công viên ở giữa là nơi mọi người gặp nhau và luyện nói với người thật.</p></div>
+    <div class="box"><h3>Vòng lặp chính</h3><p>Ở công viên, nhận nhiệm vụ với NPC hướng dẫn, đi vào điểm đến đã mở, nói để hoàn thành nhiệm vụ, nhận sao và XP, mở điểm đến kế tiếp. Quay lại công viên để gặp người khác, làm nhiệm vụ xã hội và nhận thưởng.</p></div>
+  </div>
+
+  <h3>Người dùng</h3>
+  <ul>
+    <li>Người Việt từ 18 tuổi trở lên học tiếng Anh, giao diện song ngữ Việt/Anh. Lời thoại NPC hoàn toàn bằng tiếng Anh, có nút xem bản dịch.</li>
+    <li>Cổng 18+ khi vào: khai năm sinh và đồng ý điều khoản.</li>
+    <li>Trình độ từ A1 đến B2, thể hiện bằng điểm đến đã mở, không có thanh trình độ riêng.</li>
+  </ul>
+
+  <h3>Lộ trình 10 điểm đến</h3>
+  <p>Số bước ở đây có nghĩa là thứ tự mở khóa. Danh sách do mình đề xuất, xếp theo độ khó tăng dần và theo những tình huống người đi làm hay gặp. Bạn có thể đổi, bớt hoặc thêm.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Bước</th><th>Điểm đến</th><th>Tình huống chính</th><th>CEFR</th><th>Giai đoạn</th></tr></thead>
+    <tbody>
+      <tr class="hub"><td class="num">1</td><td><b>Công viên</b> (trung tâm, luôn mở)</td><td>Chào hỏi, giới thiệu bản thân, sở thích, thời tiết. Nơi gặp người chơi khác.</td><td>A1</td><td><span class="pill ok">MVP</span></td></tr>
+      <tr><td class="num">2</td><td>Quán cà phê</td><td>Gọi đồ uống, hỏi giá, thanh toán</td><td>A1</td><td><span class="pill ok">MVP</span></td></tr>
+      <tr><td class="num">3</td><td>Nhà hàng</td><td>Đặt bàn, gọi món, yêu cầu, than phiền, tính tiền</td><td>A2</td><td><span class="pill ok">MVP</span></td></tr>
+      <tr><td class="num">4</td><td>Siêu thị và chợ</td><td>Tìm đồ, hỏi giá, số lượng, đổi trả</td><td>A2</td><td><span class="pill info">Beta</span></td></tr>
+      <tr><td class="num">5</td><td>Bến xe và ga tàu</td><td>Hỏi đường, mua vé, giờ giấc, hỏi khi bị trễ chuyến</td><td>A2</td><td><span class="pill info">Beta</span></td></tr>
+      <tr><td class="num">6</td><td>Nhà thuốc và phòng khám</td><td>Nói triệu chứng, đặt lịch khám, hiểu hướng dẫn dùng thuốc</td><td>A2–B1</td><td><span class="pill info">Beta</span></td></tr>
+      <tr><td class="num">7</td><td>Khách sạn</td><td>Nhận phòng, yêu cầu dịch vụ, báo sự cố</td><td>B1</td><td><span class="pill info">v1</span></td></tr>
+      <tr><td class="num">8</td><td>Bãi biển</td><td>Thuê đồ, hoạt động, kế hoạch, nói về sở thích</td><td>B1</td><td><span class="pill info">v1</span></td></tr>
+      <tr><td class="num">9</td><td>Đường mòn leo núi</td><td>Chỉ dẫn, mô tả cảnh, an toàn, làm việc nhóm</td><td>B1</td><td><span class="pill info">v1</span></td></tr>
+      <tr><td class="num">10</td><td>Văn phòng</td><td>Phỏng vấn xin việc, họp, trình bày ngắn</td><td>B1–B2</td><td><span class="pill info">v1</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>Leo núi là đường mòn đi bộ có các trạm dừng, mỗi trạm một NPC và một nhiệm vụ nói. Không làm vật lý trèo.</p>
+
+  <h3>Quy tắc mở khóa</h3>
+  <ul>
+    <li>Mở điểm đến kế tiếp khi hoàn thành tất cả nhiệm vụ của điểm đến hiện tại, kể cả nhiệm vụ cuối.</li>
+    <li>Mỗi nhiệm vụ được 1 đến 3 sao. Sao chỉ ảnh hưởng thưởng và bảng thành tích, không chặn mở khóa.</li>
+    <li>Bài xếp lớp mở khóa tối đa tới bước 4. Muốn đi xa hơn thì làm thử thách bỏ qua.</li>
+    <li>Điểm đến đã mở có thể chơi lại bất kỳ lúc nào.</li>
+  </ul>
+
+  <h3>Công viên: nơi mọi người tụ tập</h3>
+  <ul>
+    <li>Phòng chung tối đa 20 người, ghép theo dải tiến độ. Bạn bè mời nhau vào cùng phòng được.</li>
+    <li>Chat chữ có lọc, bong bóng trên đầu khi ở gần. Voice theo khoảng cách cho người đã đăng nhập, mặc định nhấn để nói.</li>
+    <li>Ghế chủ đề: ngồi vào một ghế sẽ hiện một chủ đề gợi ý để nói chuyện với người ngồi cạnh (ví dụ "Describe your weekend").</li>
+    <li>Bảng nhiệm vụ hằng ngày và nhiệm vụ xã hội (ví dụ "Giới thiệu bản thân với 2 người"), là phần thưởng thêm.</li>
+    <li>NPC hướng dẫn và vài NPC thường trú để công viên có sức sống khi ít người.</li>
+    <li>Sự kiện theo giờ để dồn người vào cùng lúc.</li>
+    <li>Cổng tới bản đồ thành phố, nơi chọn điểm đến đã mở.</li>
+  </ul>
+
+  <h3>Điểm đến và nhiệm vụ</h3>
+  <ul>
+    <li>Mỗi điểm đến là một cảnh nhỏ (một cửa hàng hoặc một khu vực), chơi một mình hoặc mời tối đa 3 bạn. Mặc định không có người lạ.</li>
+    <li>Mỗi điểm đến có 4–5 nhiệm vụ, nhiệm vụ cuối là bài kiểm tra tổng hợp, và thử thách bỏ qua riêng.</li>
+    <li>Nhiệm vụ viết bằng JSON có schema kiểm tra: cây hội thoại, câu được chấp nhận, gợi ý, phần thưởng, trình độ.</li>
+    <li>Mỗi lượt có nhiều biến thể câu NPC. Âm thanh dựng sẵn khi build. Mỗi nhiệm vụ 2–4 phút.</li>
+  </ul>
+
+  <h3>Nhân vật, tiến độ, tài khoản</h3>
+  <ul>
+    <li>Một bộ xương người dùng chung. Ô tùy chỉnh: màu da, tóc, áo, quần, mũ. 12 animation nền và 6 emote mở được theo tiến độ.</li>
+    <li>Khách chơi thử ngay và chat chữ, đăng nhập Google để lưu tiến độ và dùng voice.</li>
+    <li>XP, sao, điểm đến đã mở, vật phẩm, chuỗi ngày học.</li>
+  </ul>
+
+  <h3>Không làm trong MVP</h3>
+  <p>Bảy điểm đến sau cùng (bước 4 đến 10), chấm phát âm chi tiết, NPC dùng AI, ngữ pháp dạng bài tập, thanh toán, ứng dụng di động gốc, thành phố đi bộ được, xác minh tuổi thật, nhiều ngôn ngữ giao diện ngoài Việt/Anh.</p>
+</section>
+
+<section id="mvp">
+  <h2>4. MVP và lộ trình</h2>
+  <p><b>Định nghĩa "xong" của MVP:</b> một người lạ mở đường link, trong 2 phút vào được công viên, nói một câu tiếng Anh với NPC để hoàn thành nhiệm vụ đầu tiên, mở được quán cà phê rồi nhà hàng, thấy người khác đang đi quanh công viên, và lưu được tiến độ.</p>
+  <div class="timeline">
+    <div><div class="when">Tuần 1–2</div><div><b>Nền móng.</b> Monorepo, cảnh R3F, một nhân vật đi bằng WASD hoặc phím mũi tên, quy trình Blender sang GLB, server Colyseus cho nhiều trình duyệt thấy nhau, triển khai lên mạng.</div></div>
+    <div><div class="when">Tuần 3–4</div><div><b>Công viên nhiều người.</b> Nội suy chuyển động, chat chữ có lọc, emote, ghế chủ đề, NPC thường trú. <i>Mốc: mời bạn bè vào thử.</i></div></div>
+    <div><div class="when">Tuần 5–6</div><div><b>NPC, cổng nói, engine nhiệm vụ.</b> Engine hội thoại, nhận dạng giọng qua lớp trừu tượng, so khớp mờ, TTS dựng sẵn, điểm đến Quán cà phê với 4 nhiệm vụ. <i>Mốc: học được một vòng hoàn chỉnh.</i></div></div>
+    <div><div class="when">Tuần 7–8</div><div><b>Lộ trình và tài khoản.</b> Đăng nhập Google, sao, XP, quy tắc mở khóa, bản đồ thành phố, điểm đến Nhà hàng, bài xếp lớp, tùy chỉnh nhân vật theo ô.</div></div>
+    <div><div class="when">Tuần 9–10</div><div><b>Voice và an toàn.</b> LiveKit trong công viên và phòng nhóm, cổng 18+, báo cáo, chặn, tắt tiếng, công cụ kick và cấm tài khoản tối thiểu.</div></div>
+    <div><div class="when">Tuần 11–12</div><div><b>Hoàn thiện và thử nghiệm kín.</b> Hiệu năng, phân tích, theo dõi lỗi, 30–50 người thử, kiểm tra trình độ nội dung bởi người có chuyên môn.</div></div>
+  </div>
+  <p>12 tuần là mốc lạc quan, thực tế 12 đến 16 tuần. Nếu trễ, cắt theo thứ tự: (1) nhà hàng chuyển sang sau MVP, (2) tùy chỉnh nhân vật rút còn màu sắc, (3) voice chuyển sang giai đoạn 2. Không cắt cổng nói, an toàn và công viên.</p>
+
+  <h3>Các giai đoạn sau MVP</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Giai đoạn</th><th>Nội dung</th><th>Ước tính (một người)</th></tr></thead>
+    <tbody>
+      <tr><td>MVP</td><td>Công viên, Quán cà phê, Nhà hàng (bước 1–3)</td><td>12–16 tuần</td></tr>
+      <tr><td>Beta</td><td>Siêu thị và chợ, Bến xe và ga tàu, Nhà thuốc và phòng khám (bước 4–6)</td><td>Thêm 5–7 tuần</td></tr>
+      <tr><td>v1</td><td>Khách sạn, Bãi biển, Leo núi, Văn phòng (bước 7–10)</td><td>Thêm 7–9 tuần</td></tr>
+      <tr><td><b>Tổng</b></td><td>Đủ 10 điểm đến</td><td><b>24–32 tuần</b></td></tr>
+    </tbody>
+  </table></div>
+  <p>Sau MVP, mỗi điểm đến chủ yếu là nội dung và một cảnh nhỏ dùng lại bộ prop sẵn có, nên nhanh hơn nhiều so với lúc dựng engine. Đây là lý do mình chọn làm engine lộ trình đầy đủ ngay từ MVP.</p>
+
+  <h3>Chỉ số để biết MVP đang chạy tốt</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Chỉ số</th><th>Mục tiêu ban đầu</th><th>Lý do</th></tr></thead>
+    <tbody>
+      <tr><td>Thời gian tới nhiệm vụ đầu tiên</td><td>Dưới 2 phút</td><td>Rào cản vào thấp quyết định có người ở lại hay không.</td></tr>
+      <tr><td>Hoàn thành nhiệm vụ đầu</td><td>Trên 60% số người vào</td><td>Cho thấy cổng nói không quá khó.</td></tr>
+      <tr><td>Mở được quán cà phê</td><td>Trên 40% số người vào</td><td>Đo xem lộ trình có kéo người đi tiếp không.</td></tr>
+      <tr><td>Tỉ lệ nói đạt ở lần thử đầu</td><td>Khoảng 50–80%</td><td>Dưới 50% là quá khó, gần 100% là quá dễ.</td></tr>
+      <tr><td>Quay lại công viên sau khi xong nhiệm vụ</td><td>Chỉ đo</td><td>Cho biết công viên có thật sự là nơi tụ tập không.</td></tr>
+      <tr><td>Giữ chân ngày 1 và ngày 7</td><td>Chỉ đo, chưa đặt ngưỡng</td><td>Cần số thật trước khi đặt mục tiêu.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="kien-truc">
+  <h2>5. Kiến trúc kỹ thuật</h2>
+  <pre class="mermaid">
+flowchart LR
+  B["Trình duyệt: Next.js + React Three Fiber"]
+  W["Next.js server: trang, API, đăng nhập, tiến độ"]
+  P["Colyseus: phòng công viên, tối đa 20 người"]
+  D["Colyseus: phòng điểm đến, 1 đến 4 người"]
+  L["LiveKit SFU: voice"]
+  S["Dịch vụ nhận dạng giọng"]
+  DB[("Postgres")]
+  C["CDN: GLB, nhiệm vụ JSON, âm thanh TTS"]
+  B -- "HTTPS" --> W
+  B -- "WebSocket" --> P
+  B -- "WebSocket" --> D
+  B -- "WebRTC" --> L
+  B -- "luồng âm thanh khi làm nhiệm vụ" --> S
+  B -- "tải tài sản" --> C
+  W --> DB
+  W -- "cấp token" --> L
+  P -- "kiểm tra JWT" --> W
+  D -- "kiểm tra JWT và quyền mở khóa" --> W
+  D --> DB
+  </pre>
+
+  <h3>Lựa chọn công nghệ</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Lớp</th><th>Chọn</th><th>Vì sao</th></tr></thead>
+    <tbody>
+      <tr><td>Web</td><td>Next.js (App Router), TypeScript, Tailwind</td><td>Theo yêu cầu. Trang giới thiệu, đăng nhập, API tiến độ và cấp token.</td></tr>
+      <tr><td>3D</td><td>three.js qua React Three Fiber và drei</td><td>Theo yêu cầu. Quản lý scene theo kiểu component.</td></tr>
+      <tr><td>Trạng thái client</td><td>Zustand</td><td>Nhẹ, dùng ngoài vòng render cho vị trí người chơi để giữ 60 FPS.</td></tr>
+      <tr><td>Realtime</td><td>Colyseus (Node, TypeScript). Hai loại phòng: công viên và điểm đến.</td><td>Một framework cho cả phòng đông và phòng nhỏ, chia sẻ kiểu với client.</td></tr>
+      <tr><td>Voice</td><td>LiveKit (bắt đầu bằng bản Cloud)</td><td>Tránh tự xây WebRTC. Chỉ nhận luồng của người ở gần.</td></tr>
+      <tr><td>Nhận dạng giọng</td><td>Lớp trừu tượng <code>SpeechRecognizer</code>. Production dùng dịch vụ đám mây (Deepgram hoặc Azure). Web Speech API làm dự phòng khi phát triển.</td><td>Web Speech API không có trên Firefox và gửi âm thanh cho nhà cung cấp trình duyệt.</td></tr>
+      <tr><td>TTS</td><td>Dựng sẵn khi build, lưu trên CDN</td><td>Kịch bản cố định nên không cần gọi lúc chạy.</td></tr>
+      <tr><td>CSDL và đăng nhập</td><td>Postgres (Supabase hoặc Neon), Drizzle, Auth.js hoặc Supabase Auth</td><td>Quan hệ rõ ràng cho tiến độ, báo cáo, cấm.</td></tr>
+      <tr><td>Tài sản</td><td>Blender sang GLB nén Draco hoặc meshopt, texture KTX2</td><td>Nhẹ cho web. Blender MCP dùng để sửa asset, tạo prop và bố trí cảnh.</td></tr>
+      <tr><td>Quan sát</td><td>PostHog (sản phẩm), Sentry (lỗi)</td><td>Cần số liệu cho các chỉ số ở mục 4.</td></tr>
+      <tr><td>Triển khai</td><td>Next.js trên Vercel, Colyseus trên Fly.io, Postgres được quản lý</td><td>Vercel không giữ được WebSocket lâu dài nên game server phải ở chỗ khác.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Các luồng quan trọng</h3>
+  <div class="grid2">
+    <div class="box"><h3>Lộ trình và mở khóa</h3>
+      <p>Định nghĩa lộ trình nằm trong <code>path.json</code>: thứ tự, điểm đến, cảnh, NPC, nhiệm vụ, điều kiện mở khóa. Server là nơi duy nhất quyết định mở khóa. Khi client xin vào một điểm đến, phòng điểm đến kiểm tra quyền với Next.js. Thêm điểm đến mới chỉ là thêm một mục vào file này cộng nội dung và cảnh.</p></div>
+    <div class="box"><h3>Bản đồ thành phố</h3>
+      <p>Là một lớp giao diện React phủ lên cảnh công viên, hiện 10 điểm với trạng thái khóa, mở, đã xong và số sao. Chọn điểm đã mở sẽ nạp cảnh điểm đến. Làm kiểu bản đồ chọn màn thay vì thành phố đi bộ được, tiết kiệm nhiều tuần dựng cảnh nối.</p></div>
+    <div class="box"><h3>Di chuyển nhiều người</h3>
+      <p>Client dự đoán chuyển động ngay và gửi vector ý định khoảng 15 lần mỗi giây. Server kiểm tra tốc độ và va chạm trên lưới đơn giản, phát trạng thái 10–20 Hz. Client khác nội suy. Vì code nhận <code>moveVector</code> trừu tượng nên sau này thêm joystick cảm ứng không phải viết lại.</p></div>
+    <div class="box"><h3>Một lượt nói với NPC</h3>
+      <p>Client phát âm thanh dựng sẵn của NPC, mở mic, gửi luồng âm thanh tới dịch vụ nhận dạng, nhận văn bản, so khớp mờ với danh sách câu chấp nhận (chuẩn hóa chữ hoa, dấu câu, viết tắt, sai lệch từng từ). Server xác nhận kết quả rồi mới cộng XP và sao, để người chơi không tự gửi "đã đạt".</p></div>
+    <div class="box"><h3>Voice theo khoảng cách</h3>
+      <p>Next.js cấp token LiveKit sau khi kiểm tra tài khoản đã đăng nhập và chưa bị cấm. Mỗi phòng công viên tương ứng một phòng LiveKit. Client chỉ nhận luồng của người trong bán kính rồi chỉnh âm lượng bằng Web Audio theo khoảng cách. Phòng điểm đến chỉ có voice khi chơi nhóm.</p></div>
+    <div class="box"><h3>Ghép phòng công viên</h3>
+      <p>Người vào được xếp vào phòng chưa đầy gần nhất trong cùng dải tiến độ (bước 1–3, 4–6, 7–10). Khi ít người thì gộp dải. Bạn bè mời nhau qua mã hoặc liên kết sẽ vào cùng phòng bất kể dải.</p></div>
+    <div class="box"><h3>Kiểm duyệt</h3>
+      <p>Lọc chữ trên server (danh sách tiếng Anh và tiếng Việt, kiểm tra biến thể), giới hạn tốc độ gửi. Báo cáo lưu ngữ cảnh chat 60 giây gần nhất. Voice: tắt tiếng, chặn, quản trị viên kick và cấm. Mặc định không ghi âm.</p></div>
+  </div>
+
+  <h3>Mô hình dữ liệu tối thiểu</h3>
+  <p><code>users</code>, <code>profiles</code> (năm sinh, avatar), <code>mission_progress</code> (nhiệm vụ, sao, số lần thử), <code>destination_unlocks</code>, <code>xp_events</code>, <code>reports</code>, <code>bans</code>. Về sau thêm <code>teams</code> (nhóm công ty hoặc lớp học).</p>
+
+  <h3>Cấu trúc repo</h3>
+  <p><code>apps/web</code> (Next.js), <code>apps/game-server</code> (Colyseus), <code>packages/shared</code> (kiểu giao thức, schema nhiệm vụ và lộ trình bằng Zod), <code>packages/content</code> (<code>path.json</code>, nhiệm vụ JSON, script dựng TTS). Quản lý bằng pnpm và Turborepo.</p>
+
+  <h3>Ngân sách hiệu năng</h3>
+  <ul>
+    <li>Mục tiêu 60 FPS trên laptop có đồ họa tích hợp.</li>
+    <li>Công viên dưới 150 nghìn tam giác. Mỗi điểm đến dưới 80 nghìn tam giác vì là cảnh nhỏ.</li>
+    <li>Mỗi nhân vật 5–8 nghìn tam giác. Công viên đông 20 người cho khoảng 160 nghìn tam giác nhân vật.</li>
+    <li>Đổ bóng nướng sẵn cho cảnh tĩnh, chỉ nhân vật đổ bóng động. Dùng instancing cho cây, bàn, ghế.</li>
+    <li>Dung lượng tải lần đầu dưới 15 MB. Mỗi điểm đến tải khi cần.</li>
+  </ul>
+</section>
+
+<section id="rui-ro">
+  <h2>6. Rủi ro chính</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Rủi ro</th><th>Mức</th><th>Giảm thiểu</th></tr></thead>
+    <tbody>
+      <tr><td>Nhận dạng giọng sai với giọng Việt, môi trường ồn</td><td><span class="pill bad">Cao</span></td><td>Ngưỡng so khớp mờ theo level, nhiều biến thể câu, lối thoát gõ chữ vẫn mở khóa được, đo tỉ lệ đạt để chỉnh.</td></tr>
+      <tr><td>Khối lượng nội dung cho 10 điểm đến (khoảng 200 lượt hội thoại)</td><td><span class="pill bad">Cao</span></td><td>AI nháp, người có chuyên môn soát CEFR, schema kiểm tra tự động, làm theo giai đoạn.</td></tr>
+      <tr><td>Người dùng bị kẹt hoặc chán ở lộ trình tuyến tính</td><td><span class="pill fix">Trung bình</span></td><td>Bài xếp lớp, thử thách bỏ qua, gõ chữ vẫn qua, chơi lại điểm đến cũ.</td></tr>
+      <tr><td>Công viên vắng hoặc trình độ lệch nhau</td><td><span class="pill fix">Trung bình</span></td><td>Ghép theo dải tiến độ và gộp khi ít người, NPC thường trú, nhiệm vụ xã hội chỉ là thưởng thêm, sự kiện theo giờ.</td></tr>
+      <tr><td>Người dưới 18 khai sai tuổi, hoặc quấy rối qua chat và voice</td><td><span class="pill fix">Trung bình</span></td><td>Cổng 18+ có điều khoản, voice chỉ cho tài khoản đăng nhập, báo cáo, chặn, cấm tài khoản, luật sư xem xét trước khi mở công khai.</td></tr>
+      <tr><td>Phạm vi lớn so với một người</td><td><span class="pill fix">Trung bình</span></td><td>Làm theo giai đoạn, engine lộ trình đầy đủ từ MVP, cắt giảm theo thứ tự ở mục 4.</td></tr>
+      <tr><td>Chi phí voice và nhận dạng giọng tăng theo người dùng</td><td><span class="pill fix">Trung bình</span></td><td>Chỉ mở mic khi cần, giới hạn thời lượng, đo chi phí mỗi người dùng trong thử nghiệm kín.</td></tr>
+      <tr><td>Giấy phép tài sản</td><td><span class="pill ok">Thấp</span></td><td>Chỉ dùng tài sản CC0 hoặc tự làm, ghi nguồn trong repo.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="review">
+  <h2>7. Giả định cần bạn duyệt</h2>
+  <p>Mình không dừng lại hỏi mà chọn mặc định hợp lý cho từng điểm chưa rõ. Bảng dưới cho từng giả định, lý do, và việc gì thay đổi nếu bạn trả lời khác. Những dòng ảnh hưởng lớn nhất nằm ở trên.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Câu hỏi</th><th>Giả định của mình</th><th>Vì sao</th><th>Nếu bạn trả lời khác</th></tr></thead>
+    <tbody>
+      <tr><td>"Tự thêm địa điểm" nghĩa là ai chọn danh sách 10 điểm đến?</td><td>Mình chọn: công viên, quán cà phê, nhà hàng, siêu thị và chợ, bến xe và ga tàu, nhà thuốc và phòng khám, khách sạn, bãi biển, leo núi, văn phòng.</td><td>Xếp theo độ khó tăng dần và theo tình huống người đi làm hay gặp, có đủ bãi biển và leo núi như bạn nhắc.</td><td>Đổi danh sách thì chỉ phải sửa <code>path.json</code> và nội dung, nhưng thời gian phụ thuộc cảnh 3D mới.</td></tr>
+      <tr><td>Công viên có tính là một trong 10?</td><td>Có, là bước 1 và luôn mở, nên có 9 điểm đến phụ.</td><td>Bạn nói lộ trình bắt đầu ở công viên.</td><td>Nếu muốn 10 điểm đến phụ thì thêm một điểm (gợi ý: sân bay).</td></tr>
+      <tr><td>Điểm đến là phòng riêng hay có người lạ?</td><td>Phòng riêng, chơi một mình hoặc mời tối đa 3 bạn.</td><td>Đơn giản hóa server, bỏ bài toán phòng vắng, an toàn hơn.</td><td>Nếu muốn có người lạ ở mọi điểm đến thì cần ghép phòng cho từng điểm, trở lại bài toán phòng vắng và tăng khối lượng làm cho server.</td></tr>
+      <tr><td>Bản đồ thành phố là gì?</td><td>Giao diện chọn điểm đến từ công viên, không phải thành phố đi bộ được.</td><td>Tiết kiệm nhiều tuần dựng cảnh nối giữa các điểm.</td><td>Muốn đi bộ giữa các điểm thì cộng 4–8 tuần dựng đường phố và nạp cảnh liền mạch.</td></tr>
+      <tr><td>Quy tắc mở khóa?</td><td>Hoàn thành mọi nhiệm vụ của điểm đến, kể cả khi dùng lối gõ chữ (1 sao). Sao chỉ ảnh hưởng thưởng.</td><td>Tránh người dùng bị kẹt vì mic hay giọng.</td><td>Nếu yêu cầu tối thiểu 2 sao thì ép nói thật hơn nhưng tăng nguy cơ bỏ cuộc.</td></tr>
+      <tr><td>Người trình độ cao xử lý ra sao?</td><td>Bài xếp lớp 3 phút mở tới tối đa bước 4, cộng thử thách bỏ qua cho từng điểm đến.</td><td>Lộ trình tuyến tính dễ làm người khá chán.</td><td>Cho tự chọn điểm đến bất kỳ thì mất ý nghĩa của lộ trình, nhưng dễ hơn để làm.</td></tr>
+      <tr><td>Công viên ghép phòng thế nào?</td><td>Theo dải tiến độ (1–3, 4–6, 7–10), gộp khi ít người, bạn bè mời nhau vào cùng phòng.</td><td>Người cùng trình độ nói chuyện được với nhau.</td><td>Ghép không phân dải thì phòng đông hơn nhưng trình độ lệch nhau.</td></tr>
+      <tr><td>Nhiệm vụ xã hội ở công viên?</td><td>Chỉ là thưởng thêm, không nằm trong điều kiện mở khóa.</td><td>Không thể bắt người dùng chờ người khác online.</td><td>Nếu bắt buộc thì cần NPC thay thế khi không có ai.</td></tr>
+      <tr><td>Giới hạn 18+ thực thi thế nào?</td><td>Khai năm sinh và đồng ý điều khoản, chặn người khai dưới 18. Chưa xác minh giấy tờ.</td><td>Mức thực tế cho MVP, rẻ và ít ma sát.</td><td>Xác minh giấy tờ hoặc thẻ thanh toán thì an toàn hơn nhưng thêm chi phí, ma sát và pháp lý dữ liệu. Cộng 2–3 tuần.</td></tr>
+      <tr><td>Ai được dùng voice?</td><td>Chỉ tài khoản đã đăng nhập, ở công viên và phòng nhóm, mặc định nhấn để nói.</td><td>Tài khoản ẩn danh không cấm được người quấy rối.</td><td>Cho khách dùng voice thì dễ vào hơn nhưng khó kiểm soát.</td></tr>
+      <tr><td>Trụ cột học của MVP?</td><td>Nói trong ngữ cảnh. Từ vựng và nghe nằm trong nhiệm vụ.</td><td>Khớp "bắt buộc nói" và khác biệt với các app hiện có.</td><td>Chọn nghe hoặc từ vựng làm trụ cột thì cổng nói thành phần phụ.</td></tr>
+      <tr><td>Mô hình tham chiếu?</td><td>Duolingo cộng Gather.town.</td><td>Bạn chưa trả lời câu 3.</td><td>Nếu giống một trò chơi nhập vai hơn thì cần câu chuyện và chiến đấu, đổi hẳn phạm vi.</td></tr>
+      <tr><td>Nhà cung cấp nhận dạng giọng?</td><td>Dịch vụ đám mây (Deepgram hoặc Azure) sau lớp trừu tượng, Web Speech API cho phát triển.</td><td>Ổn định trên mọi trình duyệt, đổi nhà cung cấp dễ.</td><td>Muốn miễn phí hoàn toàn thì dùng Web Speech API, chấp nhận không hỗ trợ Firefox.</td></tr>
+      <tr><td>Ai soát nội dung nhiệm vụ?</td><td>AI viết nháp, một người có chuyên môn tiếng Anh soát độ khó CEFR.</td><td>Nhiệm vụ lệch trình độ làm hỏng trải nghiệm học.</td><td>Bỏ bước soát thì nhanh hơn nhưng chất lượng học không được kiểm chứng.</td></tr>
+      <tr><td>Tài khoản?</td><td>Khách chơi thử và chat chữ, đăng nhập Google để lưu tiến độ và dùng voice.</td><td>Giảm ma sát vào, vẫn có cách cấm người vi phạm.</td><td>Thêm đăng ký email thì cộng khoảng 1 tuần.</td></tr>
+      <tr><td>Thiết bị?</td><td>Máy tính trước, mã di chuyển trừu tượng để thêm cảm ứng.</td><td>Bạn nhắc WASD và phím mũi tên. Chưa có câu trả lời về tablet.</td><td>Hỗ trợ tablet ngay thì cần joystick ảo, tối ưu đồ họa mạnh hơn, giao diện đổi. Cộng 2–3 tuần.</td></tr>
+      <tr><td>Hạ tầng?</td><td>Vercel cho web, Fly.io cho Colyseus, Postgres được quản lý, LiveKit Cloud.</td><td>Ít việc vận hành cho một người.</td><td>Tự host mọi thứ trên một VPS rẻ hơn nhưng thêm việc vận hành và rủi ro sập.</td></tr>
+      <tr><td>Doanh thu?</td><td>Chưa có thanh toán trong MVP. Hướng tới freemium: mỹ phẩm nhân vật, các điểm đến sau, gói cho công ty.</td><td>Cần chứng minh người dùng ở lại trước.</td><td>Thu phí từ đầu thì thêm cổng thanh toán và quy định, cộng 2–3 tuần.</td></tr>
+      <tr><td>Kiểm duyệt?</td><td>Lọc chữ, báo cáo, chặn, kick, cấm. Không ghi âm. Lưu 60 giây chat khi có báo cáo.</td><td>Mức tối thiểu chấp nhận được cho thử nghiệm kín.</td><td>Ghi âm voice làm bằng chứng thì thêm vấn đề quyền riêng tư và lưu trữ.</td></tr>
+      <tr><td>Nguồn tài sản đồ họa?</td><td>Gói CC0 (Kenney, Quaternius), chỉnh bằng Blender qua MCP, dùng chung bộ prop giữa các điểm đến.</td><td>Tiết kiệm nhiều tuần làm mô hình.</td><td>Muốn phong cách riêng hoàn toàn thì cần họa sĩ hoặc thêm 4–8 tuần.</td></tr>
+      <tr><td>Thời gian?</td><td>MVP 12–16 tuần, đủ 10 điểm đến 24–32 tuần, một người cộng AI.</td><td>Dựa trên khối lượng ở mục 4.</td><td>Nếu có thêm người (họa sĩ 3D hoặc biên tập nội dung) thì rút ngắn rõ rệt ở giai đoạn Beta và v1.</td></tr>
+      <tr><td>Pháp lý?</td><td>Cần tư vấn pháp lý trước khi mở công khai, nhất là dữ liệu cá nhân, giọng nói và việc chặn người dưới 18 tuổi.</td><td>Mình không phải luật sư và quy định tùy quốc gia.</td><td>Nếu chỉ thử nghiệm kín với người quen đã đồng ý thì có thể hoãn tới trước ngày ra mắt.</td></tr>
+    </tbody>
+  </table></div>
+  <footer>Tài liệu này phản ánh các giả định ở thời điểm viết. Khi bạn trả lời khác ở bảng trên, phạm vi và lộ trình ở mục 4 cần tính lại.</footer>
+</section>
+
+</main>

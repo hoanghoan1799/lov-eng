@@ -1,0 +1,178 @@
+{
+ "radius": 60.0,
+ "walkRadius": 56.5,
+ "spawn": {
+  "x": 0,
+  "z": -7
+ },
+ "parkRadius": 22.0,
+ "park": {
+  "id": "park",
+  "title": "Central Park",
+  "npcName": "Sam",
+  "npcX": 0,
+  "npcZ": 15.4,
+  "npcFacingX": 0,
+  "npcFacingZ": -1
+ },
+ "places": [
+  {
+   "id": "coffee",
+   "title": "Coffee Shop",
+   "collection": "02_Coffee_Shop",
+   "x": -40,
+   "z": -8,
+   "doorX": -34.12,
+   "doorZ": -6.82,
+   "npcName": "Mia",
+   "npcX": -32.55,
+   "npcZ": -6.51,
+   "npcFacingX": -0.981,
+   "npcFacingZ": -0.196
+  },
+  {
+   "id": "restaurant",
+   "title": "Restaurant",
+   "collection": "03_Restaurant",
+   "x": -42,
+   "z": 12.5,
+   "doorX": -35.29,
+   "doorZ": 10.5,
+   "npcName": "Leo",
+   "npcX": -33.76,
+   "npcZ": 10.05,
+   "npcFacingX": -0.958,
+   "npcFacingZ": 0.285
+  },
+  {
+   "id": "supermarket",
+   "title": "Supermarket",
+   "collection": "04_Supermarket",
+   "x": -33,
+   "z": 31,
+   "doorX": -27.17,
+   "doorZ": 25.52,
+   "npcName": "Hana",
+   "npcX": -26.0,
+   "npcZ": 24.43,
+   "npcFacingX": -0.729,
+   "npcFacingZ": 0.685
+  },
+  {
+   "id": "mall",
+   "title": "Shopping Mall",
+   "collection": "05_Shopping_Mall",
+   "x": -18,
+   "z": 44,
+   "doorX": -14.4,
+   "doorZ": 35.21,
+   "npcName": "Zoe",
+   "npcX": -13.8,
+   "npcZ": 33.73,
+   "npcFacingX": -0.379,
+   "npcFacingZ": 0.926
+  },
+  {
+   "id": "library",
+   "title": "Library",
+   "collection": "06_Library",
+   "x": -33,
+   "z": -38,
+   "doorX": -28.08,
+   "doorZ": -32.34,
+   "npcName": "Eli",
+   "npcX": -27.03,
+   "npcZ": -31.13,
+   "npcFacingX": -0.656,
+   "npcFacingZ": -0.755
+  },
+  {
+   "id": "school",
+   "title": "School",
+   "collection": "07_School",
+   "x": -6,
+   "z": -45,
+   "doorX": -5.07,
+   "doorZ": -38.06,
+   "npcName": "Mr. Lee",
+   "npcX": -4.86,
+   "npcZ": -36.48,
+   "npcFacingX": -0.132,
+   "npcFacingZ": -0.991
+  },
+  {
+   "id": "hotel",
+   "title": "Hotel",
+   "collection": "08_Hotel",
+   "x": 27,
+   "z": -36,
+   "doorX": 21.9,
+   "doorZ": -29.2,
+   "npcName": "Tom",
+   "npcX": 20.94,
+   "npcZ": -27.92,
+   "npcFacingX": 0.6,
+   "npcFacingZ": -0.8
+  },
+  {
+   "id": "station",
+   "title": "Train Station",
+   "collection": "09_Train_Station",
+   "x": 40,
+   "z": 8,
+   "doorX": 33.63,
+   "doorZ": 6.73,
+   "npcName": "Ken",
+   "npcX": 32.06,
+   "npcZ": 6.41,
+   "npcFacingX": 0.981,
+   "npcFacingZ": 0.196
+  },
+  {
+   "id": "airport",
+   "title": "Airport",
+   "collection": "10_Airport",
+   "x": 17.6,
+   "z": 34.2,
+   "doorX": 14.63,
+   "doorZ": 28.42,
+   "npcName": "Anna",
+   "npcX": 13.89,
+   "npcZ": 27.0,
+   "npcFacingX": 0.458,
+   "npcFacingZ": 0.889
+  }
+ ],
+ "walkables": [
+  {
+   "x": -23.73,
+   "z": -27.32,
+   "hw": 2.7,
+   "hl": 5.03,
+   "dx": -0.656,
+   "dz": -0.755,
+   "top": 0.52,
+   "name": "Bridge_Library"
+  },
+  {
+   "x": -4.27,
+   "z": -32.02,
+   "hw": 2.7,
+   "hl": 3.8,
+   "dx": -0.132,
+   "dz": -0.991,
+   "top": 0.52,
+   "name": "Bridge_School"
+  },
+  {
+   "x": 20.96,
+   "z": -27.95,
+   "hw": 2.7,
+   "hl": 3.07,
+   "dx": 0.6,
+   "dz": -0.8,
+   "top": 0.52,
+   "name": "Bridge_Hotel"
+  }
+ ]
+}

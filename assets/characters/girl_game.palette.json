@@ -1,0 +1,96 @@
+{
+  "texture": {
+    "cells": 32,
+    "cellPx": 8,
+    "width": 256,
+    "height": 8,
+    "filter": "nearest, no mipmaps"
+  },
+  "slots": [
+    "Body",
+    "Face",
+    "Hair",
+    "Top",
+    "Bottom",
+    "Shoes",
+    "Backpack"
+  ],
+  "materials": {
+    "M_Skin": {
+      "cell": 0,
+      "hex": "#FFD0AD"
+    },
+    "M_SkinShade": {
+      "cell": 1,
+      "hex": "#F0A98A"
+    },
+    "M_Eye": {
+      "cell": 2,
+      "hex": "#2A1B14"
+    },
+    "M_EyeShine": {
+      "cell": 3,
+      "hex": "#FFFFFF"
+    },
+    "M_Cheek": {
+      "cell": 4,
+      "hex": "#FF9AA0"
+    },
+    "M_Mouth": {
+      "cell": 5,
+      "hex": "#9A3A44"
+    },
+    "M_Backpack": {
+      "cell": 6,
+      "hex": "#2B2B30"
+    },
+    "M_Strap": {
+      "cell": 7,
+      "hex": "#1F1F24"
+    },
+    "M_Sole": {
+      "cell": 8,
+      "hex": "#F6F4EE"
+    },
+    "M_Outsole": {
+      "cell": 9,
+      "hex": "#CFCBC2"
+    },
+    "M_Trim": {
+      "cell": 10,
+      "hex": "#FFFFFF"
+    },
+    "M_Hair": {
+      "cell": 11,
+      "hex": "#5A3A28"
+    },
+    "M_Brow": {
+      "cell": 12,
+      "hex": "#4A2E1F"
+    },
+    "M_Jacket": {
+      "cell": 13,
+      "hex": "#F78FB3"
+    },
+    "M_Sleeve": {
+      "cell": 14,
+      "hex": "#F5F6FA"
+    },
+    "M_Shirt": {
+      "cell": 15,
+      "hex": "#CBD0DC"
+    },
+    "M_Skirt": {
+      "cell": 16,
+      "hex": "#3C4A6B"
+    },
+    "M_Sock": {
+      "cell": 17,
+      "hex": "#F5F6FA"
+    },
+    "M_Shoes": {
+      "cell": 18,
+      "hex": "#F8A5C2"
+    }
+  }
+}
