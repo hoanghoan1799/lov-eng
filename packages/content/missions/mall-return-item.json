@@ -1,0 +1,57 @@
+{
+  "id": "mall-return-item",
+  "destinationId": "mall",
+  "title": {
+    "vi": "Đổi trả một món đồ",
+    "en": "Return an item"
+  },
+  "cefr": "A2",
+  "rewardXp": 35,
+  "turns": [
+    {
+      "id": "what-problem",
+      "npcLines": [
+        "Hi, how can I help you today?",
+        "Hello! Can I help you with something?"
+      ],
+      "translation": "Chào bạn, tôi giúp gì được cho bạn?",
+      "accepted": [
+        "I would like to return this shirt",
+        "I'd like to return this shirt",
+        "I want to return this shirt",
+        "Can I return this shirt"
+      ],
+      "hint": "Try: I would like to return this shirt."
+    },
+    {
+      "id": "why-return",
+      "npcLines": [
+        "Of course. What is the problem with it?",
+        "Sure. Is something wrong with it?"
+      ],
+      "translation": "Tất nhiên rồi. Có vấn đề gì với nó vậy?",
+      "accepted": [
+        "It is too small",
+        "It's too small",
+        "It does not fit",
+        "It doesn't fit me"
+      ],
+      "hint": "Try: It is too small."
+    },
+    {
+      "id": "refund-or-exchange",
+      "npcLines": [
+        "Would you like a refund or a different size?",
+        "Do you want your money back or another size?"
+      ],
+      "translation": "Bạn muốn hoàn tiền hay đổi cỡ khác?",
+      "accepted": [
+        "A refund, please",
+        "I would like a refund",
+        "I'd like a refund, please",
+        "A different size, please"
+      ],
+      "hint": "Try: A refund, please."
+    }
+  ]
+}

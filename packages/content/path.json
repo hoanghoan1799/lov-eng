@@ -98,7 +98,9 @@
         "sizes",
         "paying"
       ],
-      "missions": []
+      "missions": [
+        "mall-return-item"
+      ]
     },
     {
       "id": "library",
@@ -116,7 +118,9 @@
         "asking for help",
         "rules"
       ],
-      "missions": []
+      "missions": [
+        "library-join"
+      ]
     },
     {
       "id": "school",
@@ -134,7 +138,9 @@
         "schedules",
         "sports"
       ],
-      "missions": []
+      "missions": [
+        "school-enrol-class"
+      ]
     },
     {
       "id": "hotel",
@@ -152,7 +158,9 @@
         "requesting services",
         "problems"
       ],
-      "missions": []
+      "missions": [
+        "hotel-check-in"
+      ]
     },
     {
       "id": "station",
@@ -170,7 +178,9 @@
         "platforms",
         "delays"
       ],
-      "missions": []
+      "missions": [
+        "station-buy-ticket"
+      ]
     },
     {
       "id": "airport",
@@ -188,7 +198,9 @@
         "security",
         "boarding"
       ],
-      "missions": []
+      "missions": [
+        "airport-check-in"
+      ]
     }
   ]
 }

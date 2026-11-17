@@ -1,0 +1,57 @@
+{
+  "id": "school-enrol-class",
+  "destinationId": "school",
+  "title": {
+    "vi": "Đăng ký một lớp học",
+    "en": "Enrol in a class"
+  },
+  "cefr": "B1",
+  "rewardXp": 45,
+  "turns": [
+    {
+      "id": "which-course",
+      "npcLines": [
+        "Good morning. Which course are you interested in?",
+        "Hello! What kind of class are you looking for?"
+      ],
+      "translation": "Chào buổi sáng. Bạn quan tâm khóa học nào?",
+      "accepted": [
+        "I am interested in the evening English class",
+        "I'm interested in the evening English class",
+        "I would like to join the evening English class",
+        "I'd like to take the evening English class"
+      ],
+      "hint": "Try: I am interested in the evening English class."
+    },
+    {
+      "id": "when",
+      "npcLines": [
+        "That class meets twice a week. Which days suit you best?",
+        "It runs two evenings a week. When are you free?"
+      ],
+      "translation": "Lớp học hai buổi mỗi tuần. Những ngày nào phù hợp với bạn nhất?",
+      "accepted": [
+        "Tuesdays and Thursdays suit me best",
+        "Tuesday and Thursday are best for me",
+        "I am free on Tuesdays and Thursdays",
+        "I'm free on Tuesdays and Thursdays"
+      ],
+      "hint": "Try: Tuesdays and Thursdays suit me best."
+    },
+    {
+      "id": "fee",
+      "npcLines": [
+        "The fee is two hundred dollars for the term. Would you like to register now?",
+        "It costs two hundred dollars for the term. Shall I sign you up?"
+      ],
+      "translation": "Học phí là hai trăm đô la một kỳ. Bạn muốn đăng ký ngay không?",
+      "accepted": [
+        "Yes, please register me now",
+        "Yes, please sign me up",
+        "Yes, I would like to register now",
+        "Yes, I'd like to sign up"
+      ],
+      "hint": "Try: Yes, please sign me up."
+    }
+  ]
+}

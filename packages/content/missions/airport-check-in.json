@@ -1,0 +1,72 @@
+{
+  "id": "airport-check-in",
+  "destinationId": "airport",
+  "title": {
+    "vi": "Làm thủ tục tại sân bay",
+    "en": "Check in for a flight"
+  },
+  "cefr": "B2",
+  "rewardXp": 60,
+  "turns": [
+    {
+      "id": "passport",
+      "npcLines": [
+        "Good morning. May I see your passport and booking reference, please?",
+        "Hello. Could I have your passport and booking reference?"
+      ],
+      "translation": "Chào buổi sáng. Cho tôi xem hộ chiếu và mã đặt chỗ của bạn được không?",
+      "accepted": [
+        "Here is my passport and my booking reference",
+        "Here you are. This is my passport and booking reference",
+        "Certainly, here is my passport and booking reference",
+        "Sure, here are my passport and booking reference"
+      ],
+      "hint": "Try: Here is my passport and my booking reference."
+    },
+    {
+      "id": "luggage",
+      "npcLines": [
+        "Thank you. Are you checking in any luggage today?",
+        "Do you have any bags to check in?"
+      ],
+      "translation": "Cảm ơn bạn. Hôm nay bạn có ký gửi hành lý không?",
+      "accepted": [
+        "I would like to check in one suitcase",
+        "I'd like to check in one suitcase",
+        "I have one suitcase to check in",
+        "Just one suitcase, please"
+      ],
+      "hint": "Try: I would like to check in one suitcase."
+    },
+    {
+      "id": "seat",
+      "npcLines": [
+        "Would you prefer a window seat or an aisle seat?",
+        "Do you prefer the window or the aisle?"
+      ],
+      "translation": "Bạn thích ghế cạnh cửa sổ hay lối đi?",
+      "accepted": [
+        "I would prefer a window seat, if possible",
+        "I'd prefer a window seat if possible",
+        "A window seat, please",
+        "I would like an aisle seat, please"
+      ],
+      "hint": "Try: I would prefer a window seat, if possible."
+    },
+    {
+      "id": "gate",
+      "npcLines": [
+        "Here is your boarding pass. Boarding starts at gate twelve in forty minutes.",
+        "Your gate is twelve, and boarding begins in forty minutes."
+      ],
+      "translation": "Đây là thẻ lên máy bay của bạn. Việc lên máy bay bắt đầu ở cổng mười hai sau bốn mươi phút.",
+      "accepted": [
+        "Thank you. Is the flight on time",
+        "Thank you very much. Is the flight on schedule",
+        "Is the flight on time",
+        "Is my flight delayed"
+      ],
+      "hint": "Try: Thank you. Is the flight on time?"
+    }
+  ]
+}

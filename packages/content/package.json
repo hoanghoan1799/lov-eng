@@ -6,11 +6,12 @@
   "scripts": {
     "validate": "tsx scripts/validate.ts",
     "typecheck": "tsc --noEmit",
-    "test": "tsx scripts/validate.ts"
+    "test": "vitest run && tsx scripts/validate.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
-    "tsx": "^4.23.15"
+    "tsx": "^4.23.15",
+    "vitest": "^5.1.0"
   },
   "dependencies": {
     "@park/shared": "workspace:*"

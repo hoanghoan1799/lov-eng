@@ -1,0 +1,57 @@
+{
+  "id": "library-join",
+  "destinationId": "library",
+  "title": {
+    "vi": "Đăng ký thẻ thư viện",
+    "en": "Get a library card"
+  },
+  "cefr": "B1",
+  "rewardXp": 45,
+  "turns": [
+    {
+      "id": "welcome",
+      "npcLines": [
+        "Welcome to the library. How can I help you?",
+        "Hello! What can I do for you today?"
+      ],
+      "translation": "Chào mừng đến thư viện. Tôi giúp gì được cho bạn?",
+      "accepted": [
+        "I would like to get a library card",
+        "I'd like to get a library card",
+        "I want to join the library",
+        "How can I get a library card"
+      ],
+      "hint": "Try: I would like to get a library card."
+    },
+    {
+      "id": "id-needed",
+      "npcLines": [
+        "Certainly. Do you have some form of identification with you?",
+        "No problem. Do you have an ID with you?"
+      ],
+      "translation": "Chắc chắn rồi. Bạn có mang giấy tờ tùy thân không?",
+      "accepted": [
+        "Yes, I have my passport",
+        "Yes, I have my ID card",
+        "Yes, here is my passport",
+        "Yes, I do. Here it is"
+      ],
+      "hint": "Try: Yes, I have my passport."
+    },
+    {
+      "id": "how-many-books",
+      "npcLines": [
+        "Your card is ready. You can borrow five books for three weeks. Do you have any questions?",
+        "All done. You may borrow five books for three weeks. Anything else?"
+      ],
+      "translation": "Thẻ của bạn đã xong. Bạn mượn được năm cuốn trong ba tuần. Bạn có thắc mắc gì không?",
+      "accepted": [
+        "Can I renew the books online",
+        "How can I renew the books online",
+        "Can I extend the loan online",
+        "No, thank you very much"
+      ],
+      "hint": "Try: Can I renew the books online?"
+    }
+  ]
+}
