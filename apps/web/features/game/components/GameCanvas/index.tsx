@@ -17,7 +17,7 @@ export const GameCanvas = () => {
   const selfId = useGameStore((state) => state.selfId);
 
   return (
-    <Canvas camera={{ fov: 55, near: 0.1, far: 400, position: [0, 8, 12] }} dpr={[1, MAX_PIXEL_RATIO]} gl={{ antialias: !isLite }}>
+    <Canvas camera={{ fov: 55, near: 0.1, far: 400, position: [0, 8, 12] }} dpr={[1, MAX_PIXEL_RATIO]} gl={{ antialias: !isLite }} style={{ touchAction: "none" }}>
       <color attach="background" args={[SKY_COLOR]} />
       <fog attach="fog" args={[SKY_COLOR, 90, 220]} />
       <hemisphereLight args={["#ffffff", "#9fb8a0", 1.2]} />

@@ -44,3 +44,22 @@ export const KEY_BINDINGS: Record<string, keyof KeyState> = {
   ShiftLeft: "run",
   ShiftRight: "run",
 };
+
+const JOYSTICK_DEADZONE = 0.3;
+
+/** Maps a virtual joystick (x right, y down, each -1..1) onto the same key state the keyboard produces. */
+export const joystickToKeys = (x: number, y: number, isRunning: boolean): KeyState => ({
+  up: y < -JOYSTICK_DEADZONE,
+  down: y > JOYSTICK_DEADZONE,
+  left: x < -JOYSTICK_DEADZONE,
+  right: x > JOYSTICK_DEADZONE,
+  run: isRunning,
+});
+
+export const mergeKeys = (a: KeyState, b: KeyState): KeyState => ({
+  up: a.up || b.up,
+  down: a.down || b.down,
+  left: a.left || b.left,
+  right: a.right || b.right,
+  run: a.run || b.run,
+});

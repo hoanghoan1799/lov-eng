@@ -164,3 +164,41 @@ export const stepPlayer = (position: Vec2, intent: Vec2, deltaSeconds: number, w
 
   return current;
 };
+
+const CIRCLE_BLOCK_HEIGHT = 3.5;
+const CAMERA_MARGIN = 0.35;
+
+export interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
+
+/**
+ * How far along the line from `from` (the player's head) to `to` (the wanted camera spot) the camera can go
+ * before it would sit inside a building, a tree trunk or the ground. Returns a fraction between `minimum` and 1.
+ */
+export const calculateCameraClearance = (world: World, from: Vec3, to: Vec3, minimum = 0.25, steps = 24): number => {
+  for (let i = 1; i <= steps; i += 1) {
+    const t = i / steps;
+    const x = from.x + (to.x - from.x) * t;
+    const y = from.y + (to.y - from.y) * t;
+    const z = from.z + (to.z - from.z) * t;
+    const isBlocked =
+      y < groundHeight(world, x, z) + CAMERA_MARGIN ||
+      world.boxes.some(([x0, z0, x1, z1, top]) => x > x0 && x < x1 && z > z0 && z < z1 && y < top + CAMERA_MARGIN) ||
+      world.circles.some(([cx, cz, r]) => Math.hypot(x - cx, z - cz) < r + CAMERA_MARGIN && y < CIRCLE_BLOCK_HEIGHT) ||
+      world.obbs.some(([cx, cz, ux, uz, hu, hv, top]) => {
+        const du = (x - cx) * ux + (z - cz) * uz;
+        const dv = -(x - cx) * uz + (z - cz) * ux;
+
+        return Math.abs(du) < hu && Math.abs(dv) < hv && y < top + CAMERA_MARGIN;
+      });
+
+    if (isBlocked) {
+      return Math.max(minimum, (i - 1) / steps);
+    }
+  }
+
+  return 1;
+};
