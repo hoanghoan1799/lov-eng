@@ -84,6 +84,22 @@ const handleComplete = (message: MissionCompleteMessage) => {
   useGameStore.getState().patchMission({ result: { stars: message.stars, xpGained: message.xpGained }, prompt: null });
 };
 
+const isLocalUrl = (url: string): boolean => /\/\/(localhost|127\.0\.0\.1)/.test(url);
+
+const describeConnectionError = (error: unknown): string => {
+  const isRemotePage = !["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+  if (isRemotePage && isLocalUrl(SERVER_URL)) {
+    return "The game server address is not set. Deploy the game server and set NEXT_PUBLIC_GAME_SERVER_URL (see docs/DEPLOY.md).";
+  }
+
+  if (error instanceof TypeError) {
+    return `Cannot reach the game server at ${SERVER_URL}. Check that it is running and that the address uses wss:// on https pages.`;
+  }
+
+  return error instanceof Error ? error.message : "Could not connect to the game server";
+};
+
 export const connect = async (profile: Profile, playerKey: string) => {
   const store = useGameStore.getState();
 
@@ -110,7 +126,7 @@ export const connect = async (profile: Profile, playerKey: string) => {
     });
     store.setStatus("connected");
   } catch (error) {
-    store.setStatus("error", error instanceof Error ? error.message : "Could not connect to the game server");
+    store.setStatus("error", describeConnectionError(error));
   }
 };
 

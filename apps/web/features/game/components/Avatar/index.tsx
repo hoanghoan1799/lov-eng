@@ -5,8 +5,8 @@ import { type MutableRefObject, useEffect, useMemo, useRef } from "react";
 import { CanvasTexture, type Group, type Material, type Mesh, NearestFilter, SRGBColorSpace, type Texture } from "three";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 
-import { ANIMATION, MODEL_URLS, PALETTE_CELLS, RUN_SPEED_THRESHOLD, WALK_SPEED_THRESHOLD } from "@/features/game/constants/game";
-import { paintCells, shadeHex } from "@/features/game/utils/avatar-palette";
+import { ANIMATION, BOTTOM_CELL, MODEL_URLS, PALETTE_CELLS, RUN_SPEED_THRESHOLD, WALK_SPEED_THRESHOLD } from "@/features/game/constants/game";
+import { type CellColor, paintCells, shadeHex } from "@/features/game/utils/avatar-palette";
 
 export interface AvatarMotion {
   speed: number;
@@ -33,7 +33,18 @@ const createRecoloredTexture = (source: Texture, look: AvatarLook): Texture | nu
   canvas.width = PALETTE_WIDTH;
   canvas.height = PALETTE_HEIGHT;
   context.drawImage(source.image as CanvasImageSource, 0, 0);
+  const optional: CellColor[] = [];
+
+  if (look.bottom) {
+    optional.push({ cell: BOTTOM_CELL[look.gender], hex: look.bottom });
+  }
+
+  if (look.shoes) {
+    optional.push({ cell: PALETTE_CELLS.shoes, hex: look.shoes });
+  }
+
   paintCells(context, [
+    ...optional,
     { cell: PALETTE_CELLS.hair, hex: look.hair },
     { cell: PALETTE_CELLS.brow, hex: shadeHex(look.hair, 0.8) },
     { cell: PALETTE_CELLS.top, hex: look.top },

@@ -1,8 +1,14 @@
 import { type Mission, missionSchema, pathFileSchema } from "@park/shared";
 
+import airportCheckIn from "../missions/airport-check-in.json";
 import coffeeOrderDrink from "../missions/coffee-order-drink.json";
+import hotelCheckIn from "../missions/hotel-check-in.json";
+import libraryJoin from "../missions/library-join.json";
+import mallReturnItem from "../missions/mall-return-item.json";
 import parkGreeting from "../missions/park-greeting.json";
 import restaurantBookTable from "../missions/restaurant-book-table.json";
+import schoolEnrolClass from "../missions/school-enrol-class.json";
+import stationBuyTicket from "../missions/station-buy-ticket.json";
 import supermarketFindItem from "../missions/supermarket-find-item.json";
 import pathJson from "../path.json";
 import colliders from "../world/island_colliders.json";
@@ -11,7 +17,7 @@ import layout from "../world/island_layout.json";
 
 export const PATH = pathFileSchema.parse(pathJson);
 
-const MISSION_LIST: Mission[] = [parkGreeting, coffeeOrderDrink, restaurantBookTable, supermarketFindItem].map((mission) =>
+const MISSION_LIST: Mission[] = [parkGreeting, coffeeOrderDrink, restaurantBookTable, supermarketFindItem, mallReturnItem, libraryJoin, schoolEnrolClass, hotelCheckIn, stationBuyTicket, airportCheckIn].map((mission) =>
   missionSchema.parse(mission),
 );
 

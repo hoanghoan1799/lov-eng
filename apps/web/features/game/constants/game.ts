@@ -21,7 +21,9 @@ export const ANIMATION = {
 
 /** Palette texture cells recoloured per player (see assets/characters/*.palette.json). */
 export const PALETTE_CELL_PX = 8;
-export const PALETTE_CELLS = { hair: 11, brow: 12, top: 13, topShade: 14 } as const;
+export const PALETTE_CELLS = { hair: 11, brow: 12, top: 13, topShade: 14, shoes: 18 } as const;
+/** The boy wears trousers (cell 17), the girl a skirt (cell 16). */
+export const BOTTOM_CELL = { boy: 17, girl: 16 } as const;
 
 export const WALK_SPEED_THRESHOLD = 0.3;
 export const RUN_SPEED_THRESHOLD = 7;
@@ -48,6 +50,8 @@ export const NPC_HAIRS = ["#2c1b10", "#6b3e1e", "#111111", "#a0522d", "#3b2a20"]
 
 export const PROFILE_COLORS = {
   tops: ["#2e86de", "#f78fb3", "#e74c3c", "#27ae60", "#f1c40f", "#8e44ad", "#ecf0f1", "#2d3436"],
+  bottoms: ["#2c3a47", "#3c4a6b", "#1e1e1e", "#7f6a4f", "#8e3b46", "#4b7f52"],
+  shoes: ["#2e86de", "#f8a5c2", "#111111", "#ecf0f1", "#e74c3c", "#f1c40f"],
   hairs: ["#4a3525", "#111111", "#a0522d", "#e8c26a", "#c0392b", "#7f8c8d"],
 } as const;
 

@@ -1,0 +1,57 @@
+{
+  "id": "hotel-check-in",
+  "destinationId": "hotel",
+  "title": {
+    "vi": "Nhận phòng khách sạn",
+    "en": "Check in to a hotel"
+  },
+  "cefr": "B1",
+  "rewardXp": 50,
+  "turns": [
+    {
+      "id": "reservation",
+      "npcLines": [
+        "Good afternoon. Welcome to the hotel. Do you have a reservation?",
+        "Hello! Welcome. Have you booked a room with us?"
+      ],
+      "translation": "Chào buổi chiều. Chào mừng đến khách sạn. Bạn đã đặt phòng chưa?",
+      "accepted": [
+        "Yes, I have a reservation under the name Linh",
+        "Yes, I have a booking under the name Linh",
+        "Yes, I booked a room online",
+        "Yes, I made a reservation"
+      ],
+      "hint": "Try: Yes, I have a reservation under my name."
+    },
+    {
+      "id": "nights",
+      "npcLines": [
+        "Thank you. How many nights will you be staying?",
+        "Great. How long are you staying with us?"
+      ],
+      "translation": "Cảm ơn bạn. Bạn sẽ ở lại mấy đêm?",
+      "accepted": [
+        "I will be staying for three nights",
+        "I'm staying for three nights",
+        "I will stay for three nights",
+        "Three nights, please"
+      ],
+      "hint": "Try: I will be staying for three nights."
+    },
+    {
+      "id": "breakfast",
+      "npcLines": [
+        "Your room is on the fifth floor. Would you like breakfast included?",
+        "Room five hundred and twelve. Do you want to add breakfast?"
+      ],
+      "translation": "Phòng của bạn ở tầng năm. Bạn có muốn bao gồm bữa sáng không?",
+      "accepted": [
+        "Yes, what time is breakfast served",
+        "Yes, please. What time is breakfast",
+        "What time is breakfast served",
+        "Yes, please add breakfast"
+      ],
+      "hint": "Try: Yes, what time is breakfast served?"
+    }
+  ]
+}

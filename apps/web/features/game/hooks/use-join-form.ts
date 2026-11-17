@@ -1,7 +1,7 @@
 import { DEFAULT_LOOK, type Gender, isAdult, MIN_AGE } from "@park/shared";
 import { useEffect, useState } from "react";
 
-import { STORAGE_KEYS } from "@/features/game/constants/game";
+import { PROFILE_COLORS, STORAGE_KEYS } from "@/features/game/constants/game";
 import { connect } from "@/features/game/services/connection";
 import type { Profile } from "@/features/game/types/game";
 
@@ -43,6 +43,8 @@ export const useJoinForm = () => {
   const [gender, setGender] = useState<Gender>(DEFAULT_LOOK.gender);
   const [top, setTop] = useState<string>(DEFAULT_LOOK.top);
   const [hair, setHair] = useState<string>(DEFAULT_LOOK.hair);
+  const [bottom, setBottom] = useState<string>(PROFILE_COLORS.bottoms[0]);
+  const [shoes, setShoes] = useState<string>(PROFILE_COLORS.shoes[0]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
@@ -60,6 +62,8 @@ export const useJoinForm = () => {
       setGender(profile.look.gender);
       setTop(profile.look.top);
       setHair(profile.look.hair);
+      setBottom(profile.look.bottom ?? PROFILE_COLORS.bottoms[0]);
+      setShoes(profile.look.shoes ?? PROFILE_COLORS.shoes[0]);
     } catch {
       // Ignore a corrupted saved profile.
     }
@@ -77,7 +81,7 @@ export const useJoinForm = () => {
       return;
     }
 
-    const profile: Profile = { name: name.trim(), birthYear: year, look: { gender, top, hair } };
+    const profile: Profile = { name: name.trim(), birthYear: year, look: { gender, top, hair, bottom, shoes } };
 
     writeStorage(STORAGE_KEYS.profile, JSON.stringify(profile));
     void connect(profile, getPlayerKey());
@@ -89,6 +93,8 @@ export const useJoinForm = () => {
     gender,
     top,
     hair,
+    bottom,
+    shoes,
     isUnderage,
     isYearInvalid: isSubmitted && !isYearValid,
     minAge: MIN_AGE,
@@ -97,6 +103,8 @@ export const useJoinForm = () => {
     onGenderChange: setGender,
     onTopChange: setTop,
     onHairChange: setHair,
+    onBottomChange: setBottom,
+    onShoesChange: setShoes,
     onSubmit: handleSubmit,
   };
 };

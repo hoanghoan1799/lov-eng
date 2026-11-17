@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import { ChatBox } from "@/features/game/components/ChatBox";
 import { EmoteBar } from "@/features/game/components/EmoteBar";
+import { Joystick } from "@/features/game/components/Joystick";
 import { Minimap } from "@/features/game/components/Minimap";
 import { MissionDialog } from "@/features/game/components/MissionDialog";
 import { PlayersPanel } from "@/features/game/components/PlayersPanel";
@@ -12,7 +13,7 @@ import { useInteraction } from "@/features/game/hooks/use-interaction";
 const NOTICE_MS = 4000;
 
 export const Hud = () => {
-  const nearest = useInteraction();
+  const { nearest, onTalk } = useInteraction();
   const progressState = useGameStore((state) => state.progressState);
   const notice = useGameStore((state) => state.notice);
   const setNotice = useGameStore((state) => state.setNotice);
@@ -48,7 +49,12 @@ export const Hud = () => {
         <Minimap />
         <PlayersPanel />
       </div>
-      {nearest ? <div className="interact-prompt">Press E to talk to {nearest.name}</div> : null}
+      {nearest ? (
+        <button type="button" className="interact-prompt" onClick={onTalk}>
+          Talk to {nearest.name} (E)
+        </button>
+      ) : null}
+      <Joystick />
       {notice ? <div className="notice">{notice}</div> : null}
       <div className="hud-help">WASD / arrows to move · Shift to run · drag to turn the camera · Enter to chat</div>
       <EmoteBar />

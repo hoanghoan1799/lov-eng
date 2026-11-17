@@ -1,0 +1,57 @@
+{
+  "id": "station-buy-ticket",
+  "destinationId": "station",
+  "title": {
+    "vi": "Mua vé tàu",
+    "en": "Buy a train ticket"
+  },
+  "cefr": "B1",
+  "rewardXp": 50,
+  "turns": [
+    {
+      "id": "destination",
+      "npcLines": [
+        "Hello. Where would you like to go?",
+        "Good morning. Where are you travelling to?"
+      ],
+      "translation": "Xin chào. Bạn muốn đi đâu?",
+      "accepted": [
+        "I would like a ticket to the city centre",
+        "I'd like a ticket to the city centre",
+        "Can I have a ticket to the city centre",
+        "One ticket to the city centre, please"
+      ],
+      "hint": "Try: I would like a ticket to the city centre."
+    },
+    {
+      "id": "single-return",
+      "npcLines": [
+        "Would you like a single or a return ticket?",
+        "One way or return?"
+      ],
+      "translation": "Bạn muốn vé một chiều hay khứ hồi?",
+      "accepted": [
+        "A return ticket, please",
+        "A return, please",
+        "I would like a return ticket",
+        "A single, please"
+      ],
+      "hint": "Try: A return ticket, please."
+    },
+    {
+      "id": "platform",
+      "npcLines": [
+        "That is twelve dollars. The next train leaves at ten past nine.",
+        "Twelve dollars, please. The next train is at nine ten."
+      ],
+      "translation": "Mười hai đô la. Chuyến tàu tiếp theo khởi hành lúc chín giờ mười.",
+      "accepted": [
+        "Which platform does it leave from",
+        "What platform does it leave from",
+        "Which platform should I go to",
+        "Which platform is it"
+      ],
+      "hint": "Try: Which platform does it leave from?"
+    }
+  ]
+}
