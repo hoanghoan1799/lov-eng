@@ -66,29 +66,28 @@
 <main>
   <header>
     <h1>Park English đã lên web</h1>
-    <p class="lead">Game 3D chạy thật bằng Next.js + React Three Fiber và server Colyseus. Mã đã chia thành 5 nhánh xếp chồng trong repo local, nhưng <strong>chưa push được lên GitHub</strong> vì máy đang đăng nhập sai tài khoản.</p>
+    <p class="lead">Game 3D chạy bằng Next.js + React Three Fiber và server Colyseus. Toàn bộ mã đã được merge vào nhánh chính trên GitHub (7 PR). Site Vercel báo "Failed to fetch" vì <strong>server game chưa được deploy</strong>: xem phần dưới.</p>
   </header>
 
   <section class="box" aria-labelledby="push">
-    <h2 id="push">Việc bạn cần làm: push</h2>
-    <p>Lệnh push bị GitHub từ chối: <code>Permission to hoanghoan1799/lov-eng.git denied to hoanhoang-agilityio</code>. Máy đang lưu thông tin đăng nhập của tài khoản khác. Mình không thử khoá hay token nào khác. Hook của repo cũng chặn push thẳng lên <code>main</code>, nên chỉ có nhánh tính năng.</p>
-    <pre>cd /Applications/Self-Project/l-eng
-# đăng nhập đúng tài khoản hoanghoan1799 (token hoặc SSH key của tài khoản đó), rồi:
-git push -u origin chore/monorepo-shared-content feat/blender-tools feat/game-server \
-  feat/web-island-multiplayer feat/web-missions-chat</pre>
-    <p style="margin-top:10px">Repo đích đang trống, nên GitHub sẽ lấy nhánh đầu tiên làm nhánh mặc định. Nếu muốn có <code>main</code> trước, hãy tạo nó trên GitHub (ví dụ thêm README), rồi mở 5 PR theo thứ tự, mỗi PR nhắm vào nhánh đứng trước nó. Mình không có công cụ <code>gh</code> để mở PR thay bạn.</p>
+    <h2 id="push">Việc còn lại: deploy server game</h2>
+    <p>Site <code>lov-eng.vercel.app</code> gọi <code>http://localhost:2567</code> (địa chỉ mặc định) nên trình duyệt tìm server trên chính máy người dùng và báo "Failed to fetch". Vercel không chạy được Colyseus vì cần WebSocket liên tục.</p>
+    <ol>
+      <li>Deploy server lên nơi chạy container có WebSocket (Fly.io, Railway, Render...). Đã có <code>Dockerfile</code> ở gốc repo và hướng dẫn trong <code>docs/DEPLOY.md</code>.</li>
+      <li>Trên Vercel đặt biến <code>NEXT_PUBLIC_GAME_SERVER_URL=wss://địa-chỉ-server</code> rồi redeploy (giá trị được nhúng lúc build).</li>
+    </ol>
+    <p>Mình chưa deploy giúp vì cần tài khoản hosting của bạn. Từ giờ client hiện thông báo rõ ràng thay cho "Failed to fetch" khi thiếu cấu hình.</p>
   </section>
 
   <section aria-labelledby="branches">
-    <h2 id="branches">5 nhánh xếp chồng</h2>
+    <h2 id="branches">Các PR đã merge</h2>
     <div class="scroll"><table>
-      <thead><tr><th>Nhánh</th><th>Nội dung</th></tr></thead>
+      <thead><tr><th>PR</th><th>Nội dung</th></tr></thead>
       <tbody>
-        <tr><td>chore/monorepo-shared-content</td><td>pnpm + Turborepo, lint, CI, <code>@park/shared</code> (giao thức, va chạm, độ cao nền, chấm câu nói, tiến độ; 35 test), <code>@park/content</code> (10 điểm đến, 4 nhiệm vụ, dữ liệu đảo)</td></tr>
-        <tr><td>feat/blender-tools</td><td>Script Blender tạo nhân vật và đảo, xuất GLB và JSON va chạm; spec, prototype, trang review đảo</td></tr>
-        <tr><td>feat/game-server</td><td>Phòng Colyseus: di chuyển do server quyết định, chat theo khoảng cách, emote, báo cáo, nhiệm vụ, lưu tiến độ; 3 test và smoke test 2 client</td></tr>
-        <tr><td>feat/web-island-multiplayer</td><td>Đảo, nhân vật đổi màu áo/tóc, di chuyển, nhiều người chơi, màn vào game có kiểm tra 18+</td></tr>
-        <tr><td>feat/web-missions-chat</td><td>HUD, nhiệm vụ nói/gõ, chat có bong bóng, emote, danh sách online + báo cáo, minimap</td></tr>
+        <tr><td>1 đến 4</td><td>Monorepo + shared/content, pipeline Blender, server Colyseus, client web (đảo, nhân vật, nhiều người chơi, HUD, nhiệm vụ, chat)</td></tr>
+        <tr><td>5</td><td>Nhiệm vụ cho cả 10 điểm đến (test: mọi câu trả lời hợp lệ đều qua lượt của nó)</td></tr>
+        <tr><td>6</td><td>Điều khiển cảm ứng, camera không xuyên tường, sửa độ sâu kính, thông báo lỗi kết nối, Dockerfile + hướng dẫn deploy</td></tr>
+        <tr><td>7</td><td>Màu quần/váy và giày, nén meshopt cho đảo (7,5 MB xuống 1,8 MB)</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -96,24 +95,22 @@ git push -u origin chore/monorepo-shared-content feat/blender-tools feat/game-se
   <section aria-labelledby="verified">
     <h2 id="verified">Đã kiểm tra</h2>
     <div class="grid">
-      <div class="box"><div class="num">47</div><div class="label">test pass (35 shared, 9 web, 3 server). Lint và typecheck sạch.</div></div>
+      <div class="box"><div class="num">54</div><div class="label">test pass (37 shared, 3 content, 11 web, 3 server). Lint và typecheck sạch.</div></div>
       <div class="box"><div class="num">OK</div><div class="label">Clone mới từ nhánh cuối: <code>pnpm install --frozen-lockfile</code> và <code>pnpm build</code> thành công cả web lẫn server.</div></div>
       <div class="box"><div class="num">10/10</div><div class="label">NPC đứng trên nền trống và đi tới được từ điểm xuất phát (test BFS).</div></div>
     </div>
     <div class="box" style="margin-top:14px">
       <p>Trong trình duyệt thật: vào game bằng form, đảo và nhân vật hiện đúng, console không lỗi. Đi bộ bị chặn bởi đài phun nước (va chạm hoạt động). Đứng gần Sam bấm E mở nhiệm vụ. Câu sai bị từ chối, câu đúng qua lượt, xong nhiệm vụ nhận 7 XP và mở Coffee Shop, tiến độ lưu ở server.</p>
-      <p>Smoke test 2 client: thấy nhau, di chuyển đổi vị trí, chat gần được lọc từ tục, nhiệm vụ bị từ chối khi ở xa NPC, người dưới 18 tuổi bị từ chối khi vào.</p>
+      <p>Mở 2 cửa sổ trình duyệt cùng lúc: thấy "2 online", chat gửi từ cửa sổ này hiện ở cửa sổ kia. Joystick ảo đưa nhân vật đi 6,4 m về phía bắc trên màn hình điện thoại giả lập. Smoke test 2 client: thấy nhau, di chuyển đổi vị trí, chat gần được lọc từ tục, nhiệm vụ bị từ chối khi ở xa NPC, người dưới 18 tuổi bị từ chối khi vào.</p>
     </div>
   </section>
 
   <section aria-labelledby="notverified">
     <h2 id="notverified">Chưa kiểm tra hoặc còn thiếu</h2>
     <ul>
-      <li><strong>Không có điều khiển cảm ứng.</strong> Trên điện thoại chưa đi được (chỉ có WASD/mũi tên). Cần joystick ảo.</li>
       <li><strong>Micro thật chưa thử.</strong> Khung trình duyệt chặn micro. Đường nói dùng Web Speech API của trình duyệt; đường gõ thay thế đã chạy.</li>
-      <li><strong>Chưa mở 2 cửa sổ trình duyệt cùng lúc.</strong> Nhiều người chơi chỉ được kiểm chứng bằng client SDK trong smoke test.</li>
-      <li><strong>Chưa đo FPS</strong> trên máy thật. Camera chưa né vật cản (có thể xuyên qua đài phun nước hoặc cây).</li>
-      <li>Chỉ 4 nhiệm vụ đã viết (Park, Coffee, Restaurant, Supermarket). 6 điểm còn lại báo "chưa có nhiệm vụ".</li>
+      <li><strong>Chưa thử trên điện thoại thật</strong> và chưa đo FPS. Joystick mới thử trên màn hình giả lập.</li>
+      <li><strong>Server game chưa được deploy</strong> nên bản Vercel chưa chơi được.</li>
     </ul>
   </section>
 
@@ -128,10 +125,10 @@ git push -u origin chore/monorepo-shared-content feat/blender-tools feat/game-se
         <tr><td>Nhân vật mới chưa đặt lên bản đồ / khu NPC</td><td><span class="pill ok">Xong</span></td><td>10 NPC dùng model nam/nữ đặt tại vị trí đã xuất, quay mặt về phía cửa, có biểu tượng nhiệm vụ.</td></tr>
         <tr><td>Kiểm tra khoảng cách theo bounding box</td><td><span class="pill ok">Xong</span></td><td>Va chạm thật từ COL_: hộp, hộp xoay (mới), hình tròn, độ cao nền, sàn cầu. Test phát hiện 3 NPC (thư viện, khách sạn, sân bay) nằm trong hộp bao phình của toà nhà xoay; đã sửa bằng hộp xoay.</td></tr>
         <tr><td>12 collection thay vì 11</td><td><span class="pill ok">Ghi chú</span></td><td>Nền đảo gốc + 10 điểm đến + kho props dùng lại. Không ảnh hưởng game.</td></tr>
-        <tr><td>Kính bị sắp xếp trong suốt sai</td><td><span class="pill bad">Chưa</span></td><td>Chưa kiểm tra trong game.</td></tr>
-        <tr><td>Số tam giác cho điện thoại (LOD)</td><td><span class="pill bad">Chưa</span></td><td>Bản lite chỉ nhẹ hơn chút (7,13 so với 7,16 MB). LOD thật chưa làm.</td></tr>
-        <tr><td>Biểu cảm khuôn mặt, nhiều bộ đồ</td><td><span class="pill warn">Một phần</span></td><td>Chỉ chọn giới tính, màu áo, màu tóc.</td></tr>
-        <tr><td>Chat giọng nói, đăng nhập Google</td><td><span class="pill bad">Chưa</span></td><td>Chỉ chat chữ. Danh tính là khoá ẩn danh trong trình duyệt.</td></tr>
+        <tr><td>Kính bị sắp xếp trong suốt sai</td><td><span class="pill warn">Một phần</span></td><td>Kính không còn ghi độ sâu và được vẽ sau. Chưa soi kỹ từng toà nhà.</td></tr>
+        <tr><td>Số tam giác cho điện thoại (LOD)</td><td><span class="pill warn">Một phần</span></td><td>Đã nén meshopt: tải về 1,8 MB thay vì 7,5 MB. Giảm số tam giác bằng công cụ không hiệu quả (hình học flat-shaded không hàn được); muốn giảm thật phải làm trong Blender.</td></tr>
+        <tr><td>Biểu cảm khuôn mặt, nhiều bộ đồ</td><td><span class="pill warn">Một phần</span></td><td>Thêm màu quần/váy và giày. Biểu cảm khuôn mặt cần mesh hoặc morph mới từ Blender, chưa làm.</td></tr>
+        <tr><td>Chat giọng nói, đăng nhập Google</td><td><span class="pill bad">Chưa</span></td><td>Cần dịch vụ ngoài (LiveKit, Google OAuth) và tài khoản của bạn. Hiện chỉ chat chữ; danh tính là khoá ẩn danh trong trình duyệt.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -151,8 +148,8 @@ git push -u origin chore/monorepo-shared-content feat/blender-tools feat/game-se
         <tr><td>Xác thực tuổi?</td><td>Tự khai năm sinh, kiểm tra cả client lẫn server.</td><td>Đúng phạm vi bản đầu.</td><td>Xác thực thật cần dịch vụ ngoài.</td></tr>
         <tr><td>Lưu tiến độ ở đâu?</td><td>File JSON theo khoá người chơi ẩn danh, một server.</td><td>Đơn giản, đủ để thử.</td><td>Nhiều server hoặc đăng nhập cần cơ sở dữ liệu.</td></tr>
         <tr><td>Tuỳ biến nhân vật?</td><td>Giới tính + màu áo + màu tóc, bằng cách vẽ lại ô màu trong palette.</td><td>Một vật liệu, một draw call cho mỗi người chơi.</td><td>Thêm kiểu áo/tóc cần mesh mới từ Blender.</td></tr>
-        <tr><td>Nội dung nhiệm vụ?</td><td>4 nhiệm vụ ngắn (2 lượt mỗi cái), 6 điểm còn lại chưa có.</td><td>Đủ chứng minh vòng lặp mở khoá.</td><td>Cần người viết thêm nội dung theo CEFR.</td></tr>
-        <tr><td>Nhánh push?</td><td>Không push <code>main</code>; main local chỉ có commit khởi tạo.</td><td>Hook chặn push main.</td><td>Tạo main trên GitHub rồi mở PR vào đó.</td></tr>
+        <tr><td>Nội dung nhiệm vụ?</td><td>10 nhiệm vụ ngắn (2 đến 4 lượt mỗi cái), đáp án chấp nhận do mình soạn.</td><td>Đủ chứng minh vòng lặp mở khoá.</td><td>Cần người bản ngữ rà soát và thêm theo CEFR.</td></tr>
+        <tr><td>Cách đưa mã lên?</td><td>Mọi thay đổi qua PR rồi merge, không push thẳng nhánh chính.</td><td>Hook của bạn chặn push thẳng.</td><td>Muốn review trước khi merge thì bảo mình dừng ở bước mở PR.</td></tr>
       </tbody>
     </table></div>
   </section>
