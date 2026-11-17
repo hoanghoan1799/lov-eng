@@ -1,0 +1,194 @@
+{
+  "version": 1,
+  "destinations": [
+    {
+      "id": "park",
+      "order": 1,
+      "name": {
+        "vi": "Công viên",
+        "en": "Central Park"
+      },
+      "cefr": "A1",
+      "scene": "park",
+      "isHub": true,
+      "phase": "mvp",
+      "situations": [
+        "greetings",
+        "introductions",
+        "hobbies",
+        "weather"
+      ],
+      "missions": [
+        "park-greeting"
+      ]
+    },
+    {
+      "id": "coffee",
+      "order": 2,
+      "name": {
+        "vi": "Quán cà phê",
+        "en": "Coffee Shop"
+      },
+      "cefr": "A1",
+      "scene": "coffee",
+      "isHub": false,
+      "phase": "mvp",
+      "situations": [
+        "ordering drinks",
+        "asking prices",
+        "paying"
+      ],
+      "missions": [
+        "coffee-order-drink"
+      ]
+    },
+    {
+      "id": "restaurant",
+      "order": 3,
+      "name": {
+        "vi": "Nhà hàng",
+        "en": "Restaurant"
+      },
+      "cefr": "A2",
+      "scene": "restaurant",
+      "isHub": false,
+      "phase": "mvp",
+      "situations": [
+        "booking a table",
+        "ordering food",
+        "the bill"
+      ],
+      "missions": [
+        "restaurant-book-table"
+      ]
+    },
+    {
+      "id": "supermarket",
+      "order": 4,
+      "name": {
+        "vi": "Siêu thị",
+        "en": "Supermarket"
+      },
+      "cefr": "A2",
+      "scene": "supermarket",
+      "isHub": false,
+      "phase": "beta",
+      "situations": [
+        "finding items",
+        "prices",
+        "quantities"
+      ],
+      "missions": [
+        "supermarket-find-item"
+      ]
+    },
+    {
+      "id": "mall",
+      "order": 5,
+      "name": {
+        "vi": "Trung tâm thương mại",
+        "en": "Shopping Mall"
+      },
+      "cefr": "A2",
+      "scene": "mall",
+      "isHub": false,
+      "phase": "beta",
+      "situations": [
+        "clothes",
+        "sizes",
+        "paying"
+      ],
+      "missions": []
+    },
+    {
+      "id": "library",
+      "order": 6,
+      "name": {
+        "vi": "Thư viện",
+        "en": "Library"
+      },
+      "cefr": "B1",
+      "scene": "library",
+      "isHub": false,
+      "phase": "beta",
+      "situations": [
+        "borrowing books",
+        "asking for help",
+        "rules"
+      ],
+      "missions": []
+    },
+    {
+      "id": "school",
+      "order": 7,
+      "name": {
+        "vi": "Trường học",
+        "en": "School"
+      },
+      "cefr": "B1",
+      "scene": "school",
+      "isHub": false,
+      "phase": "v1",
+      "situations": [
+        "classroom",
+        "schedules",
+        "sports"
+      ],
+      "missions": []
+    },
+    {
+      "id": "hotel",
+      "order": 8,
+      "name": {
+        "vi": "Khách sạn",
+        "en": "Hotel"
+      },
+      "cefr": "B1",
+      "scene": "hotel",
+      "isHub": false,
+      "phase": "v1",
+      "situations": [
+        "checking in",
+        "requesting services",
+        "problems"
+      ],
+      "missions": []
+    },
+    {
+      "id": "station",
+      "order": 9,
+      "name": {
+        "vi": "Ga tàu",
+        "en": "Train Station"
+      },
+      "cefr": "B1",
+      "scene": "station",
+      "isHub": false,
+      "phase": "v1",
+      "situations": [
+        "tickets",
+        "platforms",
+        "delays"
+      ],
+      "missions": []
+    },
+    {
+      "id": "airport",
+      "order": 10,
+      "name": {
+        "vi": "Sân bay",
+        "en": "Airport"
+      },
+      "cefr": "B2",
+      "scene": "airport",
+      "isHub": false,
+      "phase": "v1",
+      "situations": [
+        "check-in",
+        "security",
+        "boarding"
+      ],
+      "missions": []
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "supermarket-find-item",
+  "destinationId": "supermarket",
+  "title": {
+    "vi": "Tìm món đồ trong siêu thị",
+    "en": "Find an item"
+  },
+  "cefr": "A2",
+  "rewardXp": 40,
+  "turns": [
+    {
+      "id": "ask-where",
+      "npcLines": [
+        "Hello! Can I help you find something?",
+        "Hi there! Are you looking for something?"
+      ],
+      "translation": "Xin chào! Tôi giúp bạn tìm gì không?",
+      "accepted": [
+        "Where is the milk, please",
+        "Where can I find the milk",
+        "Can you help me find the milk",
+        "Where is the milk"
+      ],
+      "hint": "Try: Where is the milk, please?"
+    },
+    {
+      "id": "price",
+      "npcLines": [
+        "It is in aisle three. Anything else?",
+        "Aisle three, on the left. Do you need anything else?"
+      ],
+      "translation": "Ở dãy số ba. Bạn cần gì nữa không?",
+      "accepted": [
+        "How much is the bread",
+        "How much is this bread",
+        "What is the price of the bread",
+        "How much is it"
+      ],
+      "hint": "Try: How much is the bread?"
+    },
+    {
+      "id": "pay",
+      "npcLines": [
+        "The bread is two dollars. Is that all?",
+        "Two dollars for the bread. Would you like a bag?"
+      ],
+      "translation": "Bánh mì hai đô la. Chỉ vậy thôi chứ?",
+      "accepted": [
+        "Yes, that is all",
+        "Yes, that's all, thank you",
+        "Yes, thank you",
+        "That is all, thanks"
+      ],
+      "hint": "Try: Yes, that's all, thank you."
+    }
+  ]
+}

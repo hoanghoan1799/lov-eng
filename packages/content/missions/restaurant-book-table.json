@@ -1,0 +1,57 @@
+{
+  "id": "restaurant-book-table",
+  "destinationId": "restaurant",
+  "title": {
+    "vi": "Đặt bàn và gọi món",
+    "en": "Book a table and order"
+  },
+  "cefr": "A2",
+  "rewardXp": 40,
+  "turns": [
+    {
+      "id": "reservation",
+      "npcLines": [
+        "Good evening! Do you have a reservation?",
+        "Welcome! Have you made a reservation?"
+      ],
+      "translation": "Chào buổi tối! Bạn đã đặt bàn chưa?",
+      "accepted": [
+        "No, I do not have a reservation",
+        "No, I don't have a reservation",
+        "No, we do not have a reservation",
+        "No, we don't have a reservation"
+      ],
+      "hint": "Try: No, I don't have a reservation."
+    },
+    {
+      "id": "how-many",
+      "npcLines": [
+        "How many people are in your group?",
+        "How many people, please?"
+      ],
+      "translation": "Nhóm bạn có bao nhiêu người?",
+      "accepted": [
+        "Two people, please",
+        "Table for two, please",
+        "We are two",
+        "There are two of us"
+      ],
+      "hint": "Try: Table for two, please."
+    },
+    {
+      "id": "order",
+      "npcLines": [
+        "Here is the menu. What would you like to order?",
+        "Are you ready to order?"
+      ],
+      "translation": "Đây là thực đơn. Bạn muốn gọi món gì?",
+      "accepted": [
+        "I would like the chicken, please",
+        "I'd like the chicken, please",
+        "Can I have the chicken, please",
+        "The chicken, please"
+      ],
+      "hint": "Try: I would like the chicken, please."
+    }
+  ]
+}

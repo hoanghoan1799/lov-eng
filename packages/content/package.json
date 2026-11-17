@@ -1,0 +1,21 @@
+{
+  "name": "@park/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "tsx scripts/validate.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx scripts/validate.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15"
+  },
+  "dependencies": {
+    "@park/shared": "workspace:*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

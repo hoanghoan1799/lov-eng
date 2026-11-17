@@ -1,0 +1,40 @@
+{
+  "id": "park-greeting",
+  "destinationId": "park",
+  "title": { "vi": "Chào hỏi ở công viên", "en": "Say hello in the park" },
+  "cefr": "A1",
+  "rewardXp": 20,
+  "turns": [
+    {
+      "id": "how-are-you",
+      "npcLines": [
+        "Hello! Welcome to the park. How are you today?",
+        "Hi there! Welcome. How are you today?"
+      ],
+      "translation": "Xin chào! Chào mừng đến công viên. Hôm nay bạn thế nào?",
+      "accepted": [
+        "I am fine, thank you",
+        "I'm good, thank you",
+        "I am good, thanks",
+        "I'm fine, thanks",
+        "I am great, thank you"
+      ],
+      "hint": "Try: I'm fine, thank you."
+    },
+    {
+      "id": "like-the-park",
+      "npcLines": [
+        "Nice to meet you. Do you like this park?",
+        "Nice to meet you! Is this your first time here?"
+      ],
+      "translation": "Rất vui được gặp bạn. Bạn có thích công viên này không?",
+      "accepted": [
+        "Yes, I like it",
+        "Yes, I do",
+        "Yes, I like this park",
+        "Yes, it is beautiful"
+      ],
+      "hint": "Try: Yes, I like it."
+    }
+  ]
+}

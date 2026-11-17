@@ -1,0 +1,56 @@
+{
+  "id": "coffee-order-drink",
+  "destinationId": "coffee",
+  "title": {
+    "vi": "Gọi một ly đồ uống",
+    "en": "Order a drink"
+  },
+  "cefr": "A1",
+  "rewardXp": 30,
+  "turns": [
+    {
+      "id": "what-to-drink",
+      "npcLines": [
+        "Good morning! What would you like to drink?",
+        "Hello! What can I get for you?"
+      ],
+      "translation": "Chào buổi sáng! Bạn muốn uống gì?",
+      "accepted": [
+        "I would like a coffee, please",
+        "I'd like a coffee, please",
+        "Can I have a coffee, please",
+        "A coffee, please"
+      ],
+      "hint": "Try: I would like a coffee, please."
+    },
+    {
+      "id": "hot-or-iced",
+      "npcLines": [
+        "Hot or iced?",
+        "Would you like it hot or iced?"
+      ],
+      "translation": "Nóng hay đá?",
+      "accepted": [
+        "Hot, please",
+        "Iced, please",
+        "Hot",
+        "Iced"
+      ],
+      "hint": "Try: Hot, please."
+    },
+    {
+      "id": "anything-else",
+      "npcLines": [
+        "That is three dollars. Would you like anything else?",
+        "Three dollars, please. Anything else?"
+      ],
+      "translation": "Ba đô la. Bạn có muốn gì nữa không?",
+      "accepted": [
+        "No, thank you",
+        "No, that's all",
+        "That is all, thank you"
+      ],
+      "hint": "Try: No, thank you."
+    }
+  ]
+}
