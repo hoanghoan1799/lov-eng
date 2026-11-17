@@ -1,4 +1,5 @@
 import { GameCanvas } from "@/features/game/components/GameCanvas";
+import { Hud } from "@/features/game/components/Hud";
 import { JoinScreen } from "@/features/game/components/JoinScreen";
 import { useGameStore } from "@/features/game/hooks/use-game-store";
 
@@ -12,6 +13,7 @@ export const GameApp = () => {
   return (
     <div className="game-root">
       <GameCanvas />
+      <Hud />
     </div>
   );
 };
