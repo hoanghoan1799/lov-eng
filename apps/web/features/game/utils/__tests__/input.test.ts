@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { calculateWorldIntent, type KeyState } from "../input";
+import { calculateWorldIntent, joystickToKeys, type KeyState, mergeKeys } from "../input";
 
 const KEYS: KeyState = { up: false, down: false, left: false, right: false, run: false };
 
@@ -28,5 +28,17 @@ describe("calculateWorldIntent", () => {
 
     expect(Math.hypot(intent.x, intent.z)).toBeCloseTo(1);
     expect(intent.x).toBeLessThan(0);
+  });
+});
+
+describe("joystick", () => {
+  it("ignores the dead zone and maps directions", () => {
+    expect(joystickToKeys(0.1, -0.1, false)).toEqual(KEYS);
+    expect(joystickToKeys(0, -1, true)).toEqual({ ...KEYS, up: true, run: true });
+    expect(joystickToKeys(-0.8, 0.8, false)).toEqual({ ...KEYS, left: true, down: true });
+  });
+
+  it("merges keyboard and joystick", () => {
+    expect(mergeKeys({ ...KEYS, up: true }, { ...KEYS, run: true })).toEqual({ ...KEYS, up: true, run: true });
   });
 });

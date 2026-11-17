@@ -1,5 +1,5 @@
 import { PATH } from "@park/content";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { NPCS } from "@/features/game/constants/npcs";
 import { liveState, useGameStore } from "@/features/game/hooks/use-game-store";
@@ -10,7 +10,7 @@ import { findNearestNpc, type NpcSpot,pickMissionId } from "@/features/game/util
 const POLL_MS = 200;
 
 /** Finds the NPC in talking range and starts its mission when the player presses E. */
-export const useInteraction = (): NpcSpot | null => {
+export const useInteraction = (): { nearest: NpcSpot | null; onTalk: () => void } => {
   const [nearest, setNearest] = useState<NpcSpot | null>(null);
 
   useEffect(() => {
@@ -23,37 +23,43 @@ export const useInteraction = (): NpcSpot | null => {
     return () => window.clearInterval(timer);
   }, []);
 
+  const handleTalk = useCallback(() => {
+    const store = useGameStore.getState();
+
+    if (store.isMissionOpen || !nearest) {
+      return;
+    }
+
+    const progress = store.progressState;
+    const missionId = pickMissionId(nearest.destinationId, progress?.progress.completedMissionIds ?? []);
+    const destination = PATH.destinations.find((item) => item.id === nearest.destinationId);
+
+    if (!missionId) {
+      store.setNotice(`${nearest.name} has no mission yet. Coming soon!`);
+
+      return;
+    }
+
+    if (!progress?.unlockedIds.includes(nearest.destinationId)) {
+      store.setNotice(`${destination?.name.en ?? "This place"} is locked. Finish the previous place first.`);
+
+      return;
+    }
+
+    sendMissionStart(missionId);
+  }, [nearest]);
+
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
-      const store = useGameStore.getState();
-
-      if (event.code !== "KeyE" || isEditingText() || store.isMissionOpen || !nearest) {
-        return;
+      if (event.code === "KeyE" && !isEditingText()) {
+        handleTalk();
       }
-
-      const progress = store.progressState;
-      const missionId = pickMissionId(nearest.destinationId, progress?.progress.completedMissionIds ?? []);
-      const destination = PATH.destinations.find((item) => item.id === nearest.destinationId);
-
-      if (!missionId) {
-        store.setNotice(`${nearest.name} has no mission yet. Coming soon!`);
-
-        return;
-      }
-
-      if (!progress?.unlockedIds.includes(nearest.destinationId)) {
-        store.setNotice(`${destination?.name.en ?? "This place"} is locked. Finish the previous place first.`);
-
-        return;
-      }
-
-      sendMissionStart(missionId);
     };
 
     window.addEventListener("keydown", handleKey);
 
     return () => window.removeEventListener("keydown", handleKey);
-  }, [nearest]);
+  }, [handleTalk]);
 
-  return nearest;
+  return { nearest, onTalk: handleTalk };
 };

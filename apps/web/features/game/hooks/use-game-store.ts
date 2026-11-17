@@ -73,6 +73,8 @@ export const liveState = {
   /** Active emote per player id, with expiry. */
   emotes: new Map<string, { emote: string; until: number }>(),
   self: { x: 0, z: 0, ry: 0, hasSpawned: false },
+  /** Virtual joystick for touch screens: x right, y down, each -1..1. */
+  joystick: { x: 0, y: 0, isRunning: false },
 };
 
 if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {

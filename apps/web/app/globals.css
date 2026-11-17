@@ -58,4 +58,9 @@ input, select { font:inherit; }
 .typed-form input { flex:1; padding:8px 10px; border:2px solid #d5dde5; border-radius:10px; }
 .mission-result { text-align:center; display:grid; gap:6px; }
 .mission-stars { font-size:36px; margin:0; color:#f1c40f; }
-@media (max-width:600px) { .hud-help { display:none; } .emote-bar { bottom:90px; } .chat-box { bottom:90px; } }
+@media (max-width:600px) { .hud-help { display:none; } .emote-bar { bottom:10px; left:12px; right:12px; justify-content:space-around; } .chat-box { bottom:64px; width:calc(100vw - 24px); } .joystick { bottom:190px; } .run-toggle { bottom:190px; } .interact-prompt { bottom:330px; } .mission-dialog { bottom:70px; } }
+.joystick { position:absolute; left:20px; bottom:150px; border-radius:50%; background:rgba(255,255,255,.35); border:2px solid rgba(255,255,255,.7); touch-action:none; display:grid; place-items:center; }
+.joystick-knob { border-radius:50%; background:rgba(31,42,55,.65); }
+.run-toggle { position:absolute; right:20px; bottom:150px; padding:12px 16px; border-radius:50%; border:2px solid #fff; background:rgba(31,42,55,.65); color:#fff; font-weight:800; touch-action:none; }
+.run-toggle.on { background:var(--accent); }
+.interact-prompt { border:0; font:inherit; cursor:pointer; }

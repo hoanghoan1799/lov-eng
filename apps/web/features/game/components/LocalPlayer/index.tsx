@@ -1,4 +1,4 @@
-import { groundHeight, PLAYER_SPEED, RUN_SPEED, stepPlayer, TICK_HZ } from "@park/shared";
+import { calculateCameraClearance, groundHeight, PLAYER_SPEED, RUN_SPEED, stepPlayer, TICK_HZ } from "@park/shared";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import type { Group } from "three";
@@ -11,7 +11,7 @@ import { liveState, useGameStore } from "@/features/game/hooks/use-game-store";
 import { isEditingText, useKeyboardInput } from "@/features/game/hooks/use-keyboard-input";
 import { sendMove } from "@/features/game/services/connection";
 import type { Profile } from "@/features/game/types/game";
-import { calculateWorldIntent } from "@/features/game/utils/input";
+import { calculateWorldIntent, joystickToKeys, mergeKeys } from "@/features/game/utils/input";
 import { calculateSmoothing, lerpAngle } from "@/features/game/utils/interpolation";
 
 export interface LocalPlayerProps {
@@ -25,6 +25,7 @@ export const LocalPlayer = ({ profile, selfId }: LocalPlayerProps) => {
   const groupRef = useRef<Group>(null);
   const motionRef = useRef<AvatarMotion>({ speed: 0, emote: null });
   const cameraRef = useRef<{ yaw: number; pitch: number }>({ yaw: 0, pitch: CAMERA.defaultPitch });
+  const zoomRef = useRef(1);
   const sendTimerRef = useRef(0);
   const sequenceRef = useRef(0);
   const wasMovingRef = useRef(false);
@@ -33,30 +34,40 @@ export const LocalPlayer = ({ profile, selfId }: LocalPlayerProps) => {
 
   useEffect(() => {
     const element = gl.domElement;
-    let isDragging = false;
+    let activePointer: number | null = null;
+    let lastX = 0;
+    let lastY = 0;
 
-    const handleDown = () => {
-      isDragging = true;
+    const handleDown = (event: PointerEvent) => {
+      activePointer = event.pointerId;
+      lastX = event.clientX;
+      lastY = event.clientY;
     };
-    const handleUp = () => {
-      isDragging = false;
+    const handleUp = (event: PointerEvent) => {
+      if (event.pointerId === activePointer) {
+        activePointer = null;
+      }
     };
     const handleMove = (event: PointerEvent) => {
-      if (!isDragging) {
+      if (event.pointerId !== activePointer) {
         return;
       }
 
-      cameraRef.current.yaw -= event.movementX * CAMERA.dragSpeed;
-      cameraRef.current.pitch = Math.min(CAMERA.maxPitch, Math.max(CAMERA.minPitch, cameraRef.current.pitch + event.movementY * CAMERA.dragSpeed));
+      cameraRef.current.yaw -= (event.clientX - lastX) * CAMERA.dragSpeed;
+      cameraRef.current.pitch = Math.min(CAMERA.maxPitch, Math.max(CAMERA.minPitch, cameraRef.current.pitch + (event.clientY - lastY) * CAMERA.dragSpeed));
+      lastX = event.clientX;
+      lastY = event.clientY;
     };
 
     element.addEventListener("pointerdown", handleDown);
     window.addEventListener("pointerup", handleUp);
+    window.addEventListener("pointercancel", handleUp);
     window.addEventListener("pointermove", handleMove);
 
     return () => {
       element.removeEventListener("pointerdown", handleDown);
       window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("pointercancel", handleUp);
       window.removeEventListener("pointermove", handleMove);
     };
   }, [gl]);
@@ -71,7 +82,8 @@ export const LocalPlayer = ({ profile, selfId }: LocalPlayerProps) => {
 
     const delta = Math.min(rawDelta, 0.1);
     const isBlocked = isEditingText() || useGameStore.getState().isMissionOpen;
-    const keys = keysRef.current;
+    const joystick = liveState.joystick;
+    const keys = mergeKeys(keysRef.current, joystickToKeys(joystick.x, joystick.y, joystick.isRunning));
     const intent = isBlocked ? { x: 0, z: 0 } : calculateWorldIntent(keys, cameraRef.current.yaw);
     const isMoving = intent.x !== 0 || intent.z !== 0;
     const isRunning = keys.run && isMoving;
@@ -114,11 +126,21 @@ export const LocalPlayer = ({ profile, selfId }: LocalPlayerProps) => {
 
     const { yaw, pitch } = cameraRef.current;
     const flat = Math.cos(pitch) * CAMERA.distance;
-    const follow = calculateSmoothing(CAMERA.smoothing, delta);
+    const head = { x: self.x, y: y + CAMERA.lookHeight, z: self.z };
+    const wanted = { x: self.x + Math.sin(yaw) * flat, y: head.y + Math.sin(pitch) * CAMERA.distance, z: self.z + Math.cos(yaw) * flat };
+    const clearance = calculateCameraClearance(WORLD, head, wanted);
+    const zoom = zoomRef.current;
 
-    camera.position.x += (self.x + Math.sin(yaw) * flat - camera.position.x) * follow;
-    camera.position.y += (y + CAMERA.lookHeight + Math.sin(pitch) * CAMERA.distance - camera.position.y) * follow;
-    camera.position.z += (self.z + Math.cos(yaw) * flat - camera.position.z) * follow;
+    zoomRef.current = clearance < zoom ? clearance : zoom + (clearance - zoom) * calculateSmoothing(CAMERA.smoothing, delta);
+
+    const follow = calculateSmoothing(CAMERA.smoothing, delta);
+    const targetX = head.x + (wanted.x - head.x) * zoomRef.current;
+    const targetY = head.y + (wanted.y - head.y) * zoomRef.current;
+    const targetZ = head.z + (wanted.z - head.z) * zoomRef.current;
+
+    camera.position.x += (targetX - camera.position.x) * (clearance < zoom ? 1 : follow);
+    camera.position.y += (targetY - camera.position.y) * (clearance < zoom ? 1 : follow);
+    camera.position.z += (targetZ - camera.position.z) * (clearance < zoom ? 1 : follow);
     camera.lookAt(self.x, y + CAMERA.lookHeight, self.z);
   });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { PLAYER_SPEED } from "../constants";
-import { groundHeight, PLAYER_RADIUS, resolveCollisions, sampleTerrainHeight, stepPlayer, type World } from "../world";
+import { calculateCameraClearance, groundHeight, PLAYER_RADIUS, resolveCollisions, sampleTerrainHeight, stepPlayer, type World } from "../world";
 
 const FLAT = { size: 3, step: 10, origin: -10, heights: [[0, 0, 0], [0, 2, 0], [0, 0, 0]] };
 
@@ -68,5 +68,18 @@ describe("stepPlayer", () => {
     const result = stepPlayer({ x: 49, z: 0 }, { x: 1, z: 0 }, 5, { ...WORLD, boxes: [], circles: [] });
 
     expect(Math.hypot(result.x, result.z)).toBeLessThanOrEqual(50 + 1e-6);
+  });
+});
+
+describe("calculateCameraClearance", () => {
+  it("is 1 in open air and shrinks when a wall is in the way", () => {
+    const head = { x: 0, y: 5, z: 0 };
+
+    expect(calculateCameraClearance(WORLD, head, { x: -5, y: 8, z: 5 })).toBe(1);
+    expect(calculateCameraClearance(WORLD, { x: 8, y: 2.6, z: 0 }, { x: 18, y: 2.6, z: 0 })).toBeLessThan(0.5);
+  });
+
+  it("never goes below the minimum", () => {
+    expect(calculateCameraClearance(WORLD, { x: 12, y: 1, z: 0 }, { x: 12, y: 1, z: 0.5 }, 0.3)).toBeGreaterThanOrEqual(0.3);
   });
 });
