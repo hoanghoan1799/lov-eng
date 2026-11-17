@@ -1,0 +1,159 @@
+<title>Park English Handoff</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: one reading column; status first, then tables you can scan and answer. Palette is the island: sea teal, sand, leaf. */
+  :root {
+    --bg: #f4f7f5;
+    --surface: #ffffff;
+    --fg: #17262b;
+    --muted: #5a6d72;
+    --line: #d7e1de;
+    --sea: #0f6f7a;
+    --leaf: #2f8a4b;
+    --sun: #b9770e;
+    --rose: #b83a3a;
+    --pill-ok-bg: #dff1e4;
+    --pill-warn-bg: #fbecc8;
+    --pill-bad-bg: #f6dcdc;
+    --font-display: "Space Grotesk", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1a1d; --surface: #16262a; --fg: #e4eeee; --muted: #93a8ab; --line: #2a3f43;
+      --sea: #5cc3cf; --leaf: #7fd19a; --sun: #f0b955; --rose: #ef8a8a;
+      --pill-ok-bg: #1d3a2a; --pill-warn-bg: #3d3216; --pill-bad-bg: #3f2020;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1a1d; --surface: #16262a; --fg: #e4eeee; --muted: #93a8ab; --line: #2a3f43;
+    --sea: #5cc3cf; --leaf: #7fd19a; --sun: #f0b955; --rose: #ef8a8a;
+    --pill-ok-bg: #1d3a2a; --pill-warn-bg: #3d3216; --pill-bad-bg: #3f2020;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+    padding-block: 32px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  main { max-width: 920px; margin: 0 auto; display: grid; gap: 36px; }
+  h1, h2 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.1; }
+  h2 { font-size: 22px; margin-bottom: 12px; }
+  p { margin: 0 0 10px; max-width: 70ch; }
+  .lead { color: var(--muted); font-size: 17px; }
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--bg); }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { font-weight: 600; }
+  .pill { display: inline-block; padding: 1px 9px; border-radius: 99px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .ok { background: var(--pill-ok-bg); color: var(--leaf); }
+  .warn { background: var(--pill-warn-bg); color: var(--sun); }
+  .bad { background: var(--pill-bad-bg); color: var(--rose); }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; }
+  pre { margin: 0; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+  ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid > * { min-width: 0; }
+  .num { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--sea); line-height: 1; font-variant-numeric: tabular-nums; }
+  .label { color: var(--muted); font-size: 13px; margin-top: 4px; }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap">
+
+<main>
+  <header>
+    <h1>Park English đã lên web</h1>
+    <p class="lead">Game 3D chạy thật bằng Next.js + React Three Fiber và server Colyseus. Mã đã chia thành 5 nhánh xếp chồng trong repo local, nhưng <strong>chưa push được lên GitHub</strong> vì máy đang đăng nhập sai tài khoản.</p>
+  </header>
+
+  <section class="box" aria-labelledby="push">
+    <h2 id="push">Việc bạn cần làm: push</h2>
+    <p>Lệnh push bị GitHub từ chối: <code>Permission to hoanghoan1799/lov-eng.git denied to hoanhoang-agilityio</code>. Máy đang lưu thông tin đăng nhập của tài khoản khác. Mình không thử khoá hay token nào khác. Hook của repo cũng chặn push thẳng lên <code>main</code>, nên chỉ có nhánh tính năng.</p>
+    <pre>cd /Applications/Self-Project/l-eng
+# đăng nhập đúng tài khoản hoanghoan1799 (token hoặc SSH key của tài khoản đó), rồi:
+git push -u origin chore/monorepo-shared-content feat/blender-tools feat/game-server \
+  feat/web-island-multiplayer feat/web-missions-chat</pre>
+    <p style="margin-top:10px">Repo đích đang trống, nên GitHub sẽ lấy nhánh đầu tiên làm nhánh mặc định. Nếu muốn có <code>main</code> trước, hãy tạo nó trên GitHub (ví dụ thêm README), rồi mở 5 PR theo thứ tự, mỗi PR nhắm vào nhánh đứng trước nó. Mình không có công cụ <code>gh</code> để mở PR thay bạn.</p>
+  </section>
+
+  <section aria-labelledby="branches">
+    <h2 id="branches">5 nhánh xếp chồng</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Nhánh</th><th>Nội dung</th></tr></thead>
+      <tbody>
+        <tr><td>chore/monorepo-shared-content</td><td>pnpm + Turborepo, lint, CI, <code>@park/shared</code> (giao thức, va chạm, độ cao nền, chấm câu nói, tiến độ; 35 test), <code>@park/content</code> (10 điểm đến, 4 nhiệm vụ, dữ liệu đảo)</td></tr>
+        <tr><td>feat/blender-tools</td><td>Script Blender tạo nhân vật và đảo, xuất GLB và JSON va chạm; spec, prototype, trang review đảo</td></tr>
+        <tr><td>feat/game-server</td><td>Phòng Colyseus: di chuyển do server quyết định, chat theo khoảng cách, emote, báo cáo, nhiệm vụ, lưu tiến độ; 3 test và smoke test 2 client</td></tr>
+        <tr><td>feat/web-island-multiplayer</td><td>Đảo, nhân vật đổi màu áo/tóc, di chuyển, nhiều người chơi, màn vào game có kiểm tra 18+</td></tr>
+        <tr><td>feat/web-missions-chat</td><td>HUD, nhiệm vụ nói/gõ, chat có bong bóng, emote, danh sách online + báo cáo, minimap</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="verified">
+    <h2 id="verified">Đã kiểm tra</h2>
+    <div class="grid">
+      <div class="box"><div class="num">47</div><div class="label">test pass (35 shared, 9 web, 3 server). Lint và typecheck sạch.</div></div>
+      <div class="box"><div class="num">OK</div><div class="label">Clone mới từ nhánh cuối: <code>pnpm install --frozen-lockfile</code> và <code>pnpm build</code> thành công cả web lẫn server.</div></div>
+      <div class="box"><div class="num">10/10</div><div class="label">NPC đứng trên nền trống và đi tới được từ điểm xuất phát (test BFS).</div></div>
+    </div>
+    <div class="box" style="margin-top:14px">
+      <p>Trong trình duyệt thật: vào game bằng form, đảo và nhân vật hiện đúng, console không lỗi. Đi bộ bị chặn bởi đài phun nước (va chạm hoạt động). Đứng gần Sam bấm E mở nhiệm vụ. Câu sai bị từ chối, câu đúng qua lượt, xong nhiệm vụ nhận 7 XP và mở Coffee Shop, tiến độ lưu ở server.</p>
+      <p>Smoke test 2 client: thấy nhau, di chuyển đổi vị trí, chat gần được lọc từ tục, nhiệm vụ bị từ chối khi ở xa NPC, người dưới 18 tuổi bị từ chối khi vào.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="notverified">
+    <h2 id="notverified">Chưa kiểm tra hoặc còn thiếu</h2>
+    <ul>
+      <li><strong>Không có điều khiển cảm ứng.</strong> Trên điện thoại chưa đi được (chỉ có WASD/mũi tên). Cần joystick ảo.</li>
+      <li><strong>Micro thật chưa thử.</strong> Khung trình duyệt chặn micro. Đường nói dùng Web Speech API của trình duyệt; đường gõ thay thế đã chạy.</li>
+      <li><strong>Chưa mở 2 cửa sổ trình duyệt cùng lúc.</strong> Nhiều người chơi chỉ được kiểm chứng bằng client SDK trong smoke test.</li>
+      <li><strong>Chưa đo FPS</strong> trên máy thật. Camera chưa né vật cản (có thể xuyên qua đài phun nước hoặc cây).</li>
+      <li>Chỉ 4 nhiệm vụ đã viết (Park, Coffee, Restaurant, Supermarket). 6 điểm còn lại báo "chưa có nhiệm vụ".</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="limits">
+    <h2 id="limits">Mục "Chưa làm hoặc còn hạn chế" của trang review đảo</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Mục</th><th>Trạng thái</th><th>Kết quả</th></tr></thead>
+      <tbody>
+        <tr><td>Chưa thử trong R3F thật</td><td><span class="pill ok">Xong</span></td><td>Chạy trong trình duyệt, không lỗi console.</td></tr>
+        <tr><td>Chưa chạy gltfjsx</td><td><span class="pill ok">Xong</span></td><td>Đã chạy, kết quả lưu ở <code>docs/gltfjsx</code>. Không dùng cho runtime vì component sinh ra không đổi màu riêng từng người chơi được; game dùng clone + vẽ lại palette. Bản <code>--transform</code> nhỏ hơn 84% (213 KB, Draco + WebP, giữ nearest), có thể áp dụng sau nếu chấp nhận tải bộ giải mã Draco.</td></tr>
+        <tr><td>Thác nước chỉ là tấm phẳng</td><td><span class="pill warn">Một phần</span></td><td>Đã dựng lại thành dải 8 bậc cong + bọt nước trong Blender. Chưa xem lại trong game.</td></tr>
+        <tr><td>Nhân vật mới chưa đặt lên bản đồ / khu NPC</td><td><span class="pill ok">Xong</span></td><td>10 NPC dùng model nam/nữ đặt tại vị trí đã xuất, quay mặt về phía cửa, có biểu tượng nhiệm vụ.</td></tr>
+        <tr><td>Kiểm tra khoảng cách theo bounding box</td><td><span class="pill ok">Xong</span></td><td>Va chạm thật từ COL_: hộp, hộp xoay (mới), hình tròn, độ cao nền, sàn cầu. Test phát hiện 3 NPC (thư viện, khách sạn, sân bay) nằm trong hộp bao phình của toà nhà xoay; đã sửa bằng hộp xoay.</td></tr>
+        <tr><td>12 collection thay vì 11</td><td><span class="pill ok">Ghi chú</span></td><td>Nền đảo gốc + 10 điểm đến + kho props dùng lại. Không ảnh hưởng game.</td></tr>
+        <tr><td>Kính bị sắp xếp trong suốt sai</td><td><span class="pill bad">Chưa</span></td><td>Chưa kiểm tra trong game.</td></tr>
+        <tr><td>Số tam giác cho điện thoại (LOD)</td><td><span class="pill bad">Chưa</span></td><td>Bản lite chỉ nhẹ hơn chút (7,13 so với 7,16 MB). LOD thật chưa làm.</td></tr>
+        <tr><td>Biểu cảm khuôn mặt, nhiều bộ đồ</td><td><span class="pill warn">Một phần</span></td><td>Chỉ chọn giới tính, màu áo, màu tóc.</td></tr>
+        <tr><td>Chat giọng nói, đăng nhập Google</td><td><span class="pill bad">Chưa</span></td><td>Chỉ chat chữ. Danh tính là khoá ẩn danh trong trình duyệt.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section aria-labelledby="assumptions">
+    <h2 id="assumptions">Giả định đã đặt (để bạn review một lần)</h2>
+    <p>Mỗi dòng: câu hỏi, giả định mình chọn, lý do, và điều gì đổi nếu bạn trả lời khác.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Câu hỏi</th><th>Giả định</th><th>Vì sao</th><th>Nếu bạn chọn khác</th></tr></thead>
+      <tbody>
+        <tr><td>Danh tính khi commit?</td><td>Cấu hình riêng cho repo: <code>hoanghoan1799</code> + email noreply của GitHub.</td><td>Cấu hình toàn cục là tài khoản công ty; không đưa email thật vào lịch sử công khai.</td><td>Đổi bằng <code>git rebase --exec "git commit --amend --reset-author"</code> trước khi push.</td></tr>
+        <tr><td>Có ghi Co-Authored-By Claude?</td><td>Không.</td><td>Hook của bạn chặn dòng đó.</td><td>Bỏ hook rồi sửa message nếu muốn ghi công.</td></tr>
+        <tr><td>File nhị phân nào được commit?</td><td>Chỉ GLB chạy thật (17 MB) trong <code>apps/web/public/models</code>. <code>.blend</code> và ảnh render bị bỏ qua.</td><td>Giữ repo gọn; script Blender dựng lại được.</td><td>Dùng Git LFS nếu muốn giữ cả .blend.</td></tr>
+        <tr><td>Một phòng hay nhiều phòng?</td><td>Một phòng "park", tối đa 20 người, đầy thì mở phòng mới; chat nghe được trong 25 m.</td><td>Công viên là nơi tụ tập; bản nhỏ dễ chạy.</td><td>Muốn nhiều người hơn: tăng giới hạn hoặc chia phòng theo khu vực.</td></tr>
+        <tr><td>Ai quyết định vị trí?</td><td>Server quyết định (cùng công thức va chạm), client dự đoán, 15 Hz; đi 5,5 m/s, chạy 8,5 m/s.</td><td>Chống gian lận và nhìn mượt.</td><td>Đổi tốc độ ở <code>packages/shared/src/constants.ts</code>.</td></tr>
+        <tr><td>Nhận giọng nói thế nào?</td><td>Web Speech API của trình duyệt, so khớp mờ trên chữ; không gửi âm thanh lên server. Gõ thay thế sau 5 lần sai hoặc khi không có micro.</td><td>Không tốn chi phí, không lưu âm thanh.</td><td>Dịch vụ nhận giọng ở server chính xác hơn nhưng tốn tiền và cần xử lý quyền riêng tư.</td></tr>
+        <tr><td>Xác thực tuổi?</td><td>Tự khai năm sinh, kiểm tra cả client lẫn server.</td><td>Đúng phạm vi bản đầu.</td><td>Xác thực thật cần dịch vụ ngoài.</td></tr>
+        <tr><td>Lưu tiến độ ở đâu?</td><td>File JSON theo khoá người chơi ẩn danh, một server.</td><td>Đơn giản, đủ để thử.</td><td>Nhiều server hoặc đăng nhập cần cơ sở dữ liệu.</td></tr>
+        <tr><td>Tuỳ biến nhân vật?</td><td>Giới tính + màu áo + màu tóc, bằng cách vẽ lại ô màu trong palette.</td><td>Một vật liệu, một draw call cho mỗi người chơi.</td><td>Thêm kiểu áo/tóc cần mesh mới từ Blender.</td></tr>
+        <tr><td>Nội dung nhiệm vụ?</td><td>4 nhiệm vụ ngắn (2 lượt mỗi cái), 6 điểm còn lại chưa có.</td><td>Đủ chứng minh vòng lặp mở khoá.</td><td>Cần người viết thêm nội dung theo CEFR.</td></tr>
+        <tr><td>Nhánh push?</td><td>Không push <code>main</code>; main local chỉ có commit khởi tạo.</td><td>Hook chặn push main.</td><td>Tạo main trên GitHub rồi mở PR vào đó.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</main>
