@@ -15,3 +15,8 @@ assets/**/*.png
 assets/**/*.glb
 apps/game-server/data
 .claude/settings.local.json
+
+__pycache__
+*.pyc
+*.tsbuildinfo
+next-env.d.ts
